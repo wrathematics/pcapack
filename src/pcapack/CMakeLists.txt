@@ -50,7 +50,7 @@ set(UTILS
 	src/utils/lapack.f90
 	src/utils/rank.f90
 	src/utils/rank_.c
-	src/utils/sgns
+	src/utils/sgns.f90
 )
 
 

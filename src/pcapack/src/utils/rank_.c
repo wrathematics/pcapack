@@ -2,7 +2,6 @@
 // Copyright 2013, Heckendorf and Schmidt
 
 #include <stdlib.h>
-#include "rand.h"
 
 #define RANK_INDEX(i) (ptr[i]-data)
 

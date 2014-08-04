@@ -24,7 +24,7 @@ module sgns
   
   
   function isgn(x) result(xsign)
-    integer :: xsgn
+    integer :: xsign
     integer, intent(in) :: x
     
     if (x > 0) then

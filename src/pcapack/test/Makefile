@@ -1,15 +1,10 @@
 FC = gfortran
 
-all: distributions transpose
+all: sgns
 
-distributions:
-	$(FC) -o distributions distributions.f90 -I../build/include ../build/liblinmod_static.a -lgomp
-
-transpose:
-	$(FC) -o transpose transpose.f90 -I../build/include ../build/liblinmod_static.a -lgomp
-
+sgns:
+	$(FC) -o sgns sgns.f90 -I../build/include ../build/libpcapack_static.a -lgomp
 
 clean:
-	rm -rf ./transpose
-	rm -rf ./distributions
+	rm -rf ./sgns
 

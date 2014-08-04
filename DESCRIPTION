@@ -1,19 +1,15 @@
-Package: ffpca
-Title: First Few Principal Components 
-Version: 0.1-0
+Package: pcapack
+Title: PCA Package
+Version: 0.1.0
 Date: 2013-6-26
-Depends: R (>= 2.14.0), methods
-LazyLoad: yes
-LazyData: yes
+Depends: R (>= 2.14.0)
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
-        "schmidt@math.utk.edu"), person("George", "Ostrouchov", role = "aut"),
+        "schmidt@math.utk.edu"), person("George", "Ostrouchov", role = "ctb"),
         person("Christian", "Heckendorf", role=c("ctb")))
-Description: The ffpca package offers several methods for quickly computing
-        the first few principal components (or left/right singular vectors).
+Description: This package offers several ways of quickly computing principal
+        components, including several methods for computing the first few
+        principal components (equivalently, left/right singular vectors).
 License: Mozilla Public License 2.0
 NeedsCompilation: Yes
-Packaged: 2013-01-24 21:29:03 UTC; mschmid3
-Author: Drew Schmidt [aut, cre],
-  George Ostrouchov [aut],
-  Christian Heckendorf [ctb]
-Maintainer: Drew Schmidt <schmidt@math.utk.edu>
+ByteCompile: yes
+Maintainer: Drew Schmidt <wrathematics@gmail.com>
