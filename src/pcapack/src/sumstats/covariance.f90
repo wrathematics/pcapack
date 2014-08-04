@@ -6,36 +6,44 @@
 
 
 module covariance
+  use :: rank
+  use :: sweeps
   use :: covariance_utils
+  use :: variances
+  use :: lapack, only : dlacpy
   implicit none
   
+  
+  integer(kind=C_int), parameter, public :: cor_pearson =  1
+  integer(kind=C_int), parameter, public :: cor_spearman = 2
+  integer(kind=C_int), parameter, public :: cor_kendall =  3 ! FIXME broken
   
   contains
   
   
   ! var-cov matrix of a matrix
-  pure subroutine cov(m, n, x, cov, info)
+  subroutine cov(m, n, x, ret)
     ! in/out
-    integer             m, n, info
-    double precision    x(m, n), cov(n, n)
+    integer :: m, n
+    double precision :: x(m, n), ret(n, n)
     ! local
-    integer             i, j
-    double precision    alpha
+    integer :: i, j
+    double precision :: alpha
     double precision, allocatable :: cpx(:, :)
-    ! external
-    external           dlacpy, dcrossprod, dcntr1, dinvip
     
     
+    print *, m, n
     allocate(cpx(m, n))
-    call dlacpy('a', m, n, x, m, cpx, m)
+!    call dlacpy('a', m, n, x, m, cpx, m)
+    cpx = x
     
     ! center
     call center(m, n, cpx)
     
     ! compute variance-covariance matrix
-    alpha = 1/(dble(m)-1)
+    alpha = 1.0d0/(dble(m-1))
     
-    call crossprod('n', m, n, alpha, cpx, cov)
+    call crossprod('n', m, n, alpha, cpx, ret)
     
     deallocate(cpx)
     
@@ -45,34 +53,32 @@ module covariance
   
   
   ! correlation matrix
-  pure subroutine cor(method, m, n, x, cor)
+  subroutine cor(method, m, n, x, ret)
     ! in/out
-    character*1           method
-    integer             m, n
-    double precision    x(m, n), cor(n, n)
+    integer :: method
+    integer :: m, n
+    double precision :: x(m, n), ret(n, n)
     ! local
-    integer             i, j
+    integer :: i, j
     double precision, allocatable :: rnks(:, :)
-    ! external
-    external           dcov
     
     
-    if (method == 'p' .or. method == 'P') then
-      call dvar(m, n, x, cor)
-      call dscl(n, n, cor) ! fixme
-    else if (method == 's' .or. method == 'S') then
+    if (method == cor_pearson) then
+!      call variance(m, n, x, ret)
+!      call scaler(n, n, ret)
+    else if (method == cor_spearman) then
       allocate(rnks(m, n))
       
-      call dclrank(m, n, x, rnks, 1)
-      call dcov(m, n, rnks, cor)
+      call colrank(rank_min, m, n, x, ret)
+      call cov(m, n, rnks, ret)
       
       deallocate(rnks)
-!      else if (method == 'k') then
+!      else if (method == rank_kendall) then
 !        
     end if
     
     return
   end
   
-  
 end module
+

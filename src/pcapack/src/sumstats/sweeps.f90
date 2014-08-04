@@ -35,8 +35,7 @@ module sweeps
     character*1           fun
     ! local
     integer :: i, j, pos
-    ! function
-    integer :: ind
+    
     
     ! special case 1
     if (margin == 1 .and. lvec == m) then

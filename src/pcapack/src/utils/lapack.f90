@@ -243,6 +243,46 @@ module lapack
     
     
     
+    subroutine dcopy(n, x, incx, y, incy)
+      integer, intent(in) :: n, incx, incy
+      double precision, intent(in) :: x(*)
+      double precision, intent(inout) :: y(*)
+    end subroutine
+    
+    
+    
+    subroutine daxpy(n, a, x, incx, y, incy)
+      integer, intent(in) :: n, incx, incy
+      double precision, intent(in) :: a, x(*)
+      double precision, intent(inout) :: y(*)
+    end subroutine
+    
+    
+    
+    subroutine daxty(n, a, x, incx, y, incy)
+      integer, intent(in) :: n, incx, incy
+      double precision, intent(in) :: a, x(*)
+      double precision, intent(inout) :: y(*)
+    end subroutine
+    
+    
+    
+    subroutine dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
+      character(len=1), intent(in) :: trans
+      integer, intent(in) :: m, n, lda, incx, incy
+      double precision, intent(in) :: alpha, beta, a(*), x(*)
+      double precision, intent(inout) :: y(*)
+    end subroutine
+    
+    
+    
+    subroutine dscal(n, a, x, incx)
+      integer, intent(in) :: n, incx
+      double precision, intent(in) :: a
+      double precision, intent(inout) :: x(*)
+    end subroutine
+    
+    
     !-------------------------------------------------------
     ! Functions
     !-------------------------------------------------------
@@ -287,6 +327,14 @@ module lapack
     
     
     
+    function dnrm3(n, x, incx, p) result(res)
+      double precision :: res
+      integer :: n, incx, p
+      double precision :: x(*)
+    end function
+    
+    
+    
     function lsame(ca, cb) result(val)
       logical :: val
       character(len=1), intent(in) :: ca, cb
@@ -299,6 +347,30 @@ module lapack
       integer :: ispec
       character(len=1) :: name, opts
       integer :: n1, n2, n3, n4
+    end function
+    
+    
+    
+    function idamin(n, x, incx) result(res)
+      integer :: res
+      integer :: n, incx
+      double precision :: x(*)
+    end function
+    
+    
+    
+    function dasum(n, x, incx) result(res)
+      double precision :: res
+      integer :: n, incx
+      double precision :: x(*)
+    end function
+    
+    
+    
+    function ddot(n, x, incx, y, incy) result(res)
+      double precision :: res
+      integer :: n, incx, incy
+      double precision :: x(*), y(*)
     end function
     
   end interface

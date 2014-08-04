@@ -5,8 +5,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#include "pcapack/include/rand_svd.h"
-#include "pcapack/include/fastmap.h"
+//#include "pcapack/include/rand_svd.h"
+//#include "pcapack/include/fastmap.h"
 
 // Produce a copy of a real SEXP matrix
 #define COPYMAT(M, N, X, CPX) (memcpy(REAL(CPX), REAL(X), M*N*sizeof(double)))

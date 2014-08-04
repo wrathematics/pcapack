@@ -6,7 +6,14 @@
 
 
 module rank
+  use, intrinsic :: iso_c_binding
   implicit none
+  
+  
+  integer(kind=C_int), parameter, public :: rank_min = 1
+  integer(kind=C_int), parameter, public :: rank_max = 2
+  integer(kind=C_int), parameter, public :: rank_avg = 3
+  integer(kind=C_int), parameter, public :: rank_def = 4
   
   
   interface
@@ -22,7 +29,7 @@ module rank
   contains
   
   
-  pure subroutine colrank(m, n, x, ret, method)
+  subroutine colrank(method, m, n, x, ret)
     ! In/Out
     integer, intent(in) :: m, n, method
     double precision, intent(in) :: x(m, n)

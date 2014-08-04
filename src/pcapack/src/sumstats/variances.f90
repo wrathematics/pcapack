@@ -14,7 +14,7 @@ module variances
   subroutine variance(n, x, mn, var)
     ! in/out
     integer :: n
-    double precision :: x( * ), mn, var
+    double precision :: x(*), mn, var
     ! local
     integer :: i
     double precision :: dt
@@ -39,7 +39,7 @@ module variances
   subroutine standard_deviation(n, x, mn, sd)
     ! in/out
     integer :: n
-    double precision :: x( * ), mn, sd
+    double precision :: x(*), mn, sd
     ! subroutines
     external            dvar
     
@@ -55,7 +55,7 @@ module variances
   subroutine row_variances(m, n, x, ret)
     ! in/out
     integer :: m, n
-    double precision :: x(m, n), ret( * )
+    double precision :: x(m, n), ret(*)
     ! local
     integer :: i
     double precision :: mn, var
@@ -76,7 +76,7 @@ module variances
   subroutine col_variances(m, n, x, ret)
     ! in/out
     integer :: m, n
-    double precision :: x(m, n), ret( * )
+    double precision :: x(m, n), ret(*)
     ! local
     integer :: i
     double precision :: mn, var
@@ -97,7 +97,7 @@ module variances
   subroutine row_standard_deviations(m, n, x, ret)
     ! in/out
     integer :: m, n
-    double precision :: x(m, n), ret( * )
+    double precision :: x(m, n), ret(*)
     ! local
     integer :: i
     double precision :: mn, var
@@ -118,7 +118,7 @@ module variances
   subroutine col_standard_deviations(m, n, x, ret)
     ! in/out
     integer :: m, n
-    double precision :: x(m, n), ret( * )
+    double precision :: x(m, n), ret(*)
     ! local
     integer :: i
     double precision :: mn, var

@@ -46,36 +46,44 @@
 !           if center='y' then the data is first centered, and otherwise
 !           not.
 !
-!  scl      (input) character*1
+!  scale_      (input) character*1
 !           flag for whether or not the data should first be scaled
-!           by the column standard deviations.  if scl='y' then the
+!           by the column standard deviations.  if scale_='y' then the
 !           data is scaled, and otherwise not.
 !
 !  info     (output) integer
 !           lapack-style error return.  
 
-! principal components via svd
-
-
 module pca
-  implicit none
   use :: lapack, only : dgemm, dscal, dlacpy, dgesdd
   use, intrinsic :: iso_c_binding
+  implicit none
+  
   
   logical(kind=c_bool), parameter, public :: true = .true.
   logical(kind=c_bool), parameter, public :: false = .false.
   
+  interface operator (==)
+    module procedure cbool_equality
+  end interface
   
   contains
   
   
+  function cbool_equality(v1,v2) result (v3)
+    logical(kind=c_bool), intent(in) :: v1, v2
+    logical :: v3
+    v3 = v1 .eqv. v2
+    return
+  end function
   
-  subroutine prcomp_svd_work(m, n, k, x, sdev, trot, retrot, center, scl, info)
+  
+  subroutine prcomp_svd_work(m, n, k, x, sdev, trot, retrot, center_, scale_, info)
     ! in/out
-    logical(kind=c_bool), intent(in) :: retrot, center, scl
+    logical(kind=C_bool), intent(in) :: retrot, center_, scale_
     integer, intent(in) :: m, n, k
     integer, intent(out) :: info
-    double precision, intent(inout)) :: x(m, n), sdev(k), trot(k, n)
+    double precision, intent(inout) :: x(m, n), sdev(k), trot(k, n)
     ! local
     integer :: lwork
     double precision :: tmp
@@ -93,11 +101,11 @@ module pca
     
     allocate(work(lwork))
     
-    if (center == true .and. scl == true) then
+    if (center_ == true .and. scale_ .eqv. true) then
       call center_scale(m, n, x)
-    else if (center == true) then
+    else if (center_ == true) then
       call center(m, n, x)
-    else if (scl == true) then
+    else if (scale_ == true) then
       call dscl(m, n, x)
     end if
       
@@ -116,9 +124,9 @@ module pca
   
   
   
-  subroutine prcomp_svd(m, n, k, x, sdev, trot, retrot, center, scl, info)
+  subroutine prcomp_svd(m, n, k, x, sdev, trot, retrot, center_, scale_, info)
     ! in/out
-    logical(kind=c_bool), intent(in) :: retrot, center, scl
+    logical(kind=c_bool), intent(in) :: retrot, center_, scale_
     integer :: m, n, k, info
     double precision :: x(m, n), sdev(k), trot(k, n)
     ! local
@@ -129,7 +137,7 @@ module pca
     allocate(cpx(m, n))
     
     ! compute pc's
-    if (retrot == true) then ! return rotated x
+    if (retrot .eqv. true) then ! return rotated x
       call dlacpy('a', m, n, x, m, cpx, m)
       
       call prcomp_svd_work()
@@ -149,7 +157,7 @@ module pca
   
   
 ! principal components via eigenvalue decomposition of covariance matrix
-!  subroutine prcomp_eig(m, n, k, x, sdev, trot, retrot, center, scl, info)
+!  subroutine prcomp_eig(m, n, k, x, sdev, trot, retrot, center, scale_, info)
 !    
 !    return
 !  end subroutine

@@ -43,18 +43,29 @@ endif()
 
 ### Source files
 set(SUMSTATS
+	src/sumstats/covariance_utils.f90
+	src/sumstats/covariance.f90
 	src/sumstats/means.f90
+	src/sumstats/sweeps.f90
+	src/sumstats/variances.f90
 )
 
 set(UTILS
+	src/utils/distances.f90
+	src/utils/float_equals.f90
 	src/utils/lapack.f90
 	src/utils/rank.f90
 	src/utils/rank_.c
 	src/utils/sgns.f90
+	src/utils/stolen_blas.f
+)
+
+SET(PCA
+	src/pca.f90
 )
 
 
-set(PCAPACK_FILES ${SUMSTATS} ${UTILS})
+set(PCAPACK_FILES ${SUMSTATS} ${UTILS} ${PCA})
 
 
 ### Make and install
@@ -80,9 +91,9 @@ endif(NOT WIN32)
 #		add_subdirectory(test)
 #	endif()
 
-#	if(COBRA_FOUND)
-#		add_subdirectory(bench)
-#	endif()
+##	if(COBRA_FOUND)
+##		add_subdirectory(bench)
+##	endif()
 #endif()
 
 #INSTALL(FILES build/libglm.so DESTINATION lib)
