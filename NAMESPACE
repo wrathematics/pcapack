@@ -1,0 +1,5 @@
+useDynLib(ffpca)
+
+exportPattern("^[[:alpha:]]+")
+
+

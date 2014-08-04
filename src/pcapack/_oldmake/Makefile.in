@@ -1,0 +1,28 @@
+CC=gcc
+CFLAGS=-fPIC -g -O0 -Wall -I/usr/local/include
+LDFLAGS=-L/usr/local/lib -o
+LIBS=-lm
+
+## Output programs
+SONAME=libsunbathe.so
+LIBRARY=build/libsunbathe.a
+LIBRARYSO=build/$(SONAME)
+TESTBIN=build/run_test
+BENCHBIN=build/run_bench
+ALL_PROGRAMS=$(LIBRARY) $(LIBRARYSO) $(TESTBIN) $(BENCHBIN)
+
+## Output .o files
+LIBRARY_OBS=\
+src/pca.o
+
+all: $(ALL_PROGRAMS)
+
+$(LIBRARY): $(LIBRARY_OBS)
+	ar rcs $@ $^
+
+$(LIBRARYSO): $(LIBRARY_OBS)
+	$(CC) -shared -Wl,-soname,$(SONAME) -o $@ $^ $(LIBS)
+
+clean:
+	rm -f $(LIBRARY_OBS) $(ALL_PROGRAMS)
+
