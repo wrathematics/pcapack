@@ -35,7 +35,7 @@ link_directories(./pcapack/build/)
 
 ### Source files
 set(RLIB_FILES
-	utils.c
+	pca.c
 )
 
 
@@ -43,7 +43,7 @@ set(RLIB_FILES
 ### Make and install
 add_library(pcapack SHARED ${RLIB_FILES})
 
-target_link_libraries(pcapack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${LIB_LINMOD} ${R_LIBRARIES} ${RNACI_LDFLAGS})
+target_link_libraries(pcapack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${LIB_PCAPACK} ${R_LIBRARIES} ${RNACI_LDFLAGS})
 
 set_target_properties(pcapack PROPERTIES PREFIX "")
 if(NOT WIN32)

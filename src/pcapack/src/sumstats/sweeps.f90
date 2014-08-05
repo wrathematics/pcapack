@@ -6,6 +6,7 @@
 
 
 module sweeps
+  use, intrinsic :: iso_c_binding
   implicit none
   
   
@@ -28,7 +29,6 @@ module sweeps
   ! sweep array out of matrix
   ! code is a bit of a monstrosity, but not sure how to simplify it without hurting performance...
   subroutine sweep(m, n, x, vec, lvec, margin, fun)
-    implicit none
     ! in/out
     integer :: m, n, lvec, margin
     double precision :: x(m,n), vec(lvec)
@@ -168,8 +168,8 @@ module sweeps
   ! centers matrix x; return overwrites x
   ! if centering and scaling is needed, call dcntrscl; it's slightly more efficient
   ! the subroutine passes through each column, determining the mean 
-  subroutine center(m, n, x)
-    implicit none
+  subroutine center(m, n, x) &
+    bind(C, name='center_')
     ! in/out
     integer :: m, n
     double precision :: x(m, n)
@@ -190,8 +190,8 @@ module sweeps
   ! scales matrix x by root mean square; return overwrites x
   ! rms = sqrt(sum(x^2)/(n-1))
   ! if centering and scaling is needed, call dcntrscl; it's slightly more efficient
-  subroutine scaler(m, n, x)
-    implicit none
+  subroutine scaler(m, n, x) &
+    bind(C, name='scaler_')
     ! in/out
     integer :: m, n
     double precision :: x(m, n)
@@ -211,8 +211,8 @@ module sweeps
   
   
   ! center and scale simultaneously
-  subroutine center_scale(m, n, x)
-    implicit none
+  subroutine center_scale(m, n, x) &
+    bind(C, name='center_scale_')
     ! in/out
     integer :: m, n
     double precision :: x(m, n)

@@ -57,6 +57,7 @@
 module pca
   use :: lapack, only : dgemm, dscal, dlacpy, dgesdd
   use, intrinsic :: iso_c_binding
+  use :: sweeps
   implicit none
   
   
@@ -86,8 +87,8 @@ module pca
     double precision, intent(inout) :: x(m, n), sdev(k), trot(k, n)
     ! local
     integer :: lwork
-    double precision :: tmp
-    double precision, allocatable :: work(:)
+    double precision :: tmp(1)
+    double precision, allocatable :: work(:), u(:)
     integer,          allocatable :: iwork(:)
     
     
@@ -95,36 +96,39 @@ module pca
     allocate(iwork(8*k))
     lwork = -1
     
-    call dgesdd('o', m, n, x, m, sdev, 0.0d0, m, trot, k, tmp, lwork, iwork, info)
+    call dgesdd('o', m, n, x, m, sdev, u, m, trot, k, tmp, lwork, iwork, info)
    
-    lwork = int(tmp)
+    lwork = int(tmp(1))
     
     allocate(work(lwork))
     
-    if (center_ == true .and. scale_ .eqv. true) then
+    if (center_ == true .and. scale_ == true) then
       call center_scale(m, n, x)
     else if (center_ == true) then
       call center(m, n, x)
     else if (scale_ == true) then
-      call dscl(m, n, x)
+      call scaler(m, n, x)
     end if
       
     ! compute svd
-    call dgesdd('o', m, n, x, m, sdev, 0.0d0, m, trot, k, work, lwork, iwork, info)
+    if (m < n) allocate(u(m*m))
+    call dgesdd('o', m, n, x, m, sdev, u, m, trot, k, work, lwork, iwork, info)
+    if (m < n) deallocate(u)
     
     deallocate(iwork)
     deallocate(work)
     
     ! normalize singular values
-    tmp = 1.0d0 / max(1.0d0, sqrt(dble(m-1)))
-    call dscal(k, tmp, sdev, 1)
+    tmp(1) = 1.0d0 / max(1.0d0, sqrt(dble(m-1)))
+    call dscal(k, tmp(1), sdev, 1)
     
     return
   end subroutine
   
   
   
-  subroutine prcomp_svd(m, n, k, x, sdev, trot, retrot, center_, scale_, info)
+  subroutine prcomp_svd(m, n, k, x, sdev, trot, retrot, center_, scale_, info) &
+    bind(C, name='prcomp_svd_')
     ! in/out
     logical(kind=c_bool), intent(in) :: retrot, center_, scale_
     integer :: m, n, k, info
@@ -140,14 +144,14 @@ module pca
     if (retrot .eqv. true) then ! return rotated x
       call dlacpy('a', m, n, x, m, cpx, m)
       
-      call prcomp_svd_work()
+      call prcomp_svd_work(m, n, k, x, sdev, trot, retrot, center_, scale_, info)
       
       ! x = x %*% t(rot)            c := alpha*op(a)*op(b) + beta*c
       call dgemm('n', 't', m, n, k, 1.0d0, cpx, m, trot, k, 0.0d0, x, m)
       
       deallocate(cpx)
     else
-      call prcomp_svd()
+      call prcomp_svd(m, n, k, x, sdev, trot, retrot, center_, scale_, info)
     end if
     
     

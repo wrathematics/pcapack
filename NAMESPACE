@@ -1,4 +1,4 @@
-useDynLib(ffpca)
+useDynLib(pcapack)
 
 exportPattern("^[[:alpha:]]+")
 
