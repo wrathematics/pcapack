@@ -27,7 +27,7 @@ execute_process(COMMAND Rscript "-e" "RNACI:::ldflags()"
 
 
 ### Flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wfatal-errors -O3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wfatal-errors -O3 -g")
 
 link_directories(./pcapack/build/)
 
@@ -36,6 +36,7 @@ link_directories(./pcapack/build/)
 ### Source files
 set(RLIB_FILES
 	pca.c
+	svd.c
 )
 
 

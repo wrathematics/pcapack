@@ -1,11 +1,10 @@
 Package: pcapack
-Title: PCA Package
+Title: A Package for PCA and SVD
 Version: 0.1.0
-Date: 2013-6-26
 Depends: R (>= 2.14.0)
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
-        "schmidt@math.utk.edu"), person("George", "Ostrouchov", role = "ctb"),
-        person("Christian", "Heckendorf", role=c("ctb")))
+        "wrathematics@gmail.com"), person("Christian", "Heckendorf", 
+        role=c("ctb")), person("George", "Ostrouchov", role = "ctb"))
 Description: This package offers several ways of quickly computing principal
         components, including several methods for computing the first few
         principal components (equivalently, left/right singular vectors).

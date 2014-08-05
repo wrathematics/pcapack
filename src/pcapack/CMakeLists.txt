@@ -9,7 +9,7 @@ set(CMAKE_Fortran_MODULE_DIRECTORY "include/")
 
 ### Flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wfatal-errors -O3 -fPIC")
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wfatal-errors -O3 -fPIC")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wfatal-errors -O3 -fPIC -g")
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -51,6 +51,7 @@ set(SUMSTATS
 )
 
 set(UTILS
+	src/utils/cbool.f90
 	src/utils/distances.f90
 	src/utils/float_equals.f90
 	src/utils/lapack.f90
@@ -62,6 +63,7 @@ set(UTILS
 
 SET(PCA
 	src/pca.f90
+	src/svd.f90
 )
 
 

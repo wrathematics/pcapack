@@ -1,8 +1,9 @@
-! this source code form is subject to the terms of the mozilla public
-! license, v. 2.0. if a copy of the mpl was not distributed with this
-! file, you can obtain one at http://mozilla.org/mpl/2.0/.
+! This Source Code Form is subject to the terms of the Mozilla Public
+! License, v. 2.0. If a copy of the MPL was not distributed with this
+! file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-! copyright 2013, schmidt
+! Copyright 2013-2014, Schmidt
+
 
 ! purpose
 ! =======
@@ -46,42 +47,27 @@
 !           if center='y' then the data is first centered, and otherwise
 !           not.
 !
-!  scale_      (input) character*1
+!  scalex      (input) character*1
 !           flag for whether or not the data should first be scaled
-!           by the column standard deviations.  if scale_='y' then the
+!           by the column standard deviations.  if scalex='y' then the
 !           data is scaled, and otherwise not.
 !
 !  info     (output) integer
 !           lapack-style error return.  
 
 module pca
-  use :: lapack, only : dgemm, dscal, dlacpy, dgesdd
+  use :: lapack
   use, intrinsic :: iso_c_binding
   use :: sweeps
+  use :: cbool
   implicit none
   
   
-  logical(kind=c_bool), parameter, public :: true = .true.
-  logical(kind=c_bool), parameter, public :: false = .false.
-  
-  interface operator (==)
-    module procedure cbool_equality
-  end interface
-  
   contains
   
-  
-  function cbool_equality(v1,v2) result (v3)
-    logical(kind=c_bool), intent(in) :: v1, v2
-    logical :: v3
-    v3 = v1 .eqv. v2
-    return
-  end function
-  
-  
-  subroutine prcomp_svd_work(m, n, k, x, sdev, trot, retrot, center_, scale_, info)
+  subroutine prcomp_svd_work(m, n, k, x, sdev, trot, retrot, centerx, scalex, info)
     ! in/out
-    logical(kind=C_bool), intent(in) :: retrot, center_, scale_
+    logical(kind=C_bool), intent(in) :: retrot, centerx, scalex
     integer, intent(in) :: m, n, k
     integer, intent(out) :: info
     double precision, intent(inout) :: x(m, n), sdev(k), trot(k, n)
@@ -89,7 +75,7 @@ module pca
     integer :: lwork
     double precision :: tmp(1)
     double precision, allocatable :: work(:), u(:)
-    integer,          allocatable :: iwork(:)
+    integer, allocatable :: iwork(:)
     
     
     ! allocations
@@ -102,11 +88,11 @@ module pca
     
     allocate(work(lwork))
     
-    if (center_ == true .and. scale_ == true) then
+    if (centerx == true .and. scalex == true) then
       call center_scale(m, n, x)
-    else if (center_ == true) then
+    else if (centerx == true) then
       call center(m, n, x)
-    else if (scale_ == true) then
+    else if (scalex == true) then
       call scaler(m, n, x)
     end if
       
@@ -127,10 +113,10 @@ module pca
   
   
   
-  subroutine prcomp_svd(m, n, k, x, sdev, trot, retrot, center_, scale_, info) &
+  subroutine prcomp_svd(m, n, k, x, sdev, trot, retrot, centerx, scalex, info) &
     bind(C, name='prcomp_svd_')
     ! in/out
-    logical(kind=c_bool), intent(in) :: retrot, center_, scale_
+    logical(kind=c_bool), intent(in) :: retrot, centerx, scalex
     integer :: m, n, k, info
     double precision :: x(m, n), sdev(k), trot(k, n)
     ! local
@@ -140,20 +126,16 @@ module pca
     ! allocations
     allocate(cpx(m, n))
     
+    call dlacpy('a', m, n, x, m, cpx, m)
     ! compute pc's
-    if (retrot .eqv. true) then ! return rotated x
-      call dlacpy('a', m, n, x, m, cpx, m)
+    call prcomp_svd_work(m, n, k, cpx, sdev, trot, retrot, centerx, scalex, info)
       
-      call prcomp_svd_work(m, n, k, x, sdev, trot, retrot, center_, scale_, info)
-      
-      ! x = x %*% t(rot)            c := alpha*op(a)*op(b) + beta*c
-      call dgemm('n', 't', m, n, k, 1.0d0, cpx, m, trot, k, 0.0d0, x, m)
-      
-      deallocate(cpx)
-    else
-      call prcomp_svd(m, n, k, x, sdev, trot, retrot, center_, scale_, info)
-    end if
+!    if (retrot == true) then ! return rotated x
+!      ! x = x %*% t(rot)            c := alpha*op(a)*op(b) + beta*c
+!      call dgemm('n', 't', m, n, k, 1.0d0, cpx, m, trot, k, 0.0d0, cpx, m)
+!    end if
     
+    deallocate(cpx)
     
     return
   end subroutine
@@ -161,7 +143,7 @@ module pca
   
   
 ! principal components via eigenvalue decomposition of covariance matrix
-!  subroutine prcomp_eig(m, n, k, x, sdev, trot, retrot, center, scale_, info)
+!  subroutine prcomp_eig(m, n, k, x, sdev, trot, retrot, center, scalex, info)
 !    
 !    return
 !  end subroutine

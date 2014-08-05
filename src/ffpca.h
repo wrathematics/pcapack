@@ -11,9 +11,6 @@
 // Produce a copy of a real SEXP matrix
 #define COPYMAT(M, N, X, CPX) (memcpy(REAL(CPX), REAL(X), M*N*sizeof(double)))
 
-// Character pointers
-#define CHARPT(x,i) ((char*)CHAR(STRING_ELT(x,i)))
-#define RCHAR(x) ((char*)CHAR(STRING_ELT(x,0)))
-
+#define MIN(a,b) a<b?a:b
 
 #endif

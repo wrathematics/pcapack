@@ -18,11 +18,10 @@ SEXP R_pca(SEXP M, SEXP N, SEXP K, SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
   newRvec(SDEV, k, "double");
   newRmat(TROT, k, n, "double");
   
-  prcomp_svd_(&m, &n, &k, DBLP(X), DBLP(SDEV), DBLP(TROT), &retrot, 
-    &center, &scale, &info);
+  prcomp_svd_(&m, &n, &k, DBLP(X), DBLP(SDEV), DBLP(TROT), &retrot, &center, &scale, &info);
   
-/*  if (info < 0)*/
-/*    warning()*/
+/*  if (info != 0)*/
+/*    error(_("info=%d from Lapack routine '%s'"), info, "dgesdd");*/
   
   RET_NAMES = make_list_names(2, "sdev", "rotation");
   RET = make_list(RET_NAMES, 2, SDEV, TROT);
