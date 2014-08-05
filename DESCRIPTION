@@ -2,6 +2,7 @@ Package: pcapack
 Title: A Package for PCA and SVD
 Version: 0.1.0
 Depends: R (>= 2.14.0)
+Enhances: rbenchmark
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
         "wrathematics@gmail.com"), person("Christian", "Heckendorf", 
         role=c("ctb")), person("George", "Ostrouchov", role = "ctb"))
