@@ -37,6 +37,7 @@ link_directories(./pcapack/build/)
 set(RLIB_FILES
 	pca.c
 	svd.c
+	utils.c
 )
 
 

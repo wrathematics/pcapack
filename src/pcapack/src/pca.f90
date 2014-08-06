@@ -60,6 +60,8 @@ module pca
   use, intrinsic :: iso_c_binding
   use :: sweeps
   use :: cbool
+  use :: svds
+  use :: transposition
   implicit none
   
   
@@ -72,21 +74,11 @@ module pca
     integer, intent(out) :: info
     double precision, intent(inout) :: x(m, n), sdev(k), trot(k, n)
     ! local
-    integer :: lwork
-    double precision :: tmp(1)
-    double precision, allocatable :: work(:), u(:)
-    integer, allocatable :: iwork(:)
+    double precision :: tmp
+    double precision, allocatable :: u(:,:)
     
     
-    ! allocations
-    allocate(iwork(8*k))
-    lwork = -1
-    
-    call dgesdd('o', m, n, x, m, sdev, u, m, trot, k, tmp, lwork, iwork, info)
-   
-    lwork = int(tmp(1))
-    
-    allocate(work(lwork))
+    allocate(u(m, n))
     
     if (centerx == true .and. scalex == true) then
       call center_scale(m, n, x)
@@ -97,16 +89,15 @@ module pca
     end if
       
     ! compute svd
-    if (m < n) allocate(u(m*m))
-    call dgesdd('o', m, n, x, m, sdev, u, m, trot, k, work, lwork, iwork, info)
-    if (m < n) deallocate(u)
+    call svd(n, n, m, n, x, sdev, u, trot, info)
     
-    deallocate(iwork)
-    deallocate(work)
+    call xpose(n, n, trot)
     
     ! normalize singular values
-    tmp(1) = 1.0d0 / max(1.0d0, sqrt(dble(m-1)))
-    call dscal(k, tmp(1), sdev, 1)
+    tmp = 1.0d0 / max(1.0d0, sqrt(dble(m-1)))
+    call dscal(k, tmp, sdev, 1)
+    
+    if (allocated(u)) deallocate(u)
     
     return
   end subroutine

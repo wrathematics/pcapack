@@ -59,6 +59,7 @@ set(UTILS
 	src/utils/rank_.c
 	src/utils/sgns.f90
 	src/utils/stolen_blas.f
+	src/utils/transposition.f90
 )
 
 SET(PCA
