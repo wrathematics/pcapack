@@ -2,28 +2,36 @@ library(pcapack)
 
 set.seed(1234)
 
-m <- 10
-n <- 5
-k <- min(m, n)
-
-x <- matrix(rnorm(m*n), m, n)
-
-
-test <- function(nu, nv)
+test <- function(x, nu, nv)
 {
   LA_svd(x, nu, nv)
   La.svd(x, nu, nv)
   
-  all.equal(LA_svd(x), La.svd(x))
+  check <- all.equal(LA_svd(x), La.svd(x))
+  
+  cat(paste("nu=", nu, " nv=", nv, ":\t", check, "\n", sep=""))
+  invisible()
 }
 
+suite <- function(m, n)
+{
+  k <- min(m, n)
+  x <- matrix(rnorm(m*n), m, n)
+  
+  test(x, 0, 0)
+  test(x, k, k)
+  test(x, k, 0)
+  test(x, 0, k)
+  test(x, m, 0)
+  test(x, 0, n)
+  test(x, m, n)
+  test(x, 5, 3)
+  
+  invisible()
+}
+
+#########################
 
 
-test(0, 0)
-test(k, k)
-test(k, 0)
-test(0, k)
-test(m, 0)
-test(0, n)
-test(m, n)
-test(5, 3)
+#suite(10, 5)
+suite(5, 10)

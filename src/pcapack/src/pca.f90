@@ -67,66 +67,57 @@ module pca
   
   contains
   
-  subroutine prcomp_svd_work(m, n, k, x, sdev, trot, retrot, centerx, scalex, info)
-    ! in/out
-    logical(kind=C_bool), intent(in) :: retrot, centerx, scalex
-    integer, intent(in) :: m, n, k
-    integer, intent(out) :: info
-    double precision, intent(inout) :: x(m, n), sdev(k), trot(k, n)
-    ! local
-    double precision :: tmp
-    double precision, allocatable :: u(:,:)
-    
-    
-    allocate(u(m, n))
-    
-    if (centerx == true .and. scalex == true) then
-      call center_scale(m, n, x)
-    else if (centerx == true) then
-      call center(m, n, x)
-    else if (scalex == true) then
-      call scaler(m, n, x)
-    end if
-      
-    ! compute svd
-    call svd(n, n, m, n, x, sdev, u, trot, info)
-    
-    call xpose(n, n, trot)
-    
-    ! normalize singular values
-    tmp = 1.0d0 / max(1.0d0, sqrt(dble(m-1)))
-    call dscal(k, tmp, sdev, 1)
-    
-    if (allocated(u)) deallocate(u)
-    
-    return
-  end subroutine
-  
-  
-  
-  subroutine prcomp_svd(m, n, k, x, sdev, trot, retrot, centerx, scalex, info) &
+  subroutine prcomp_svd(m, n, x, sdev, rotation, retrot, centerx, scalex, info) &
     bind(C, name='prcomp_svd_')
     ! in/out
     logical(kind=c_bool), intent(in) :: retrot, centerx, scalex
-    integer :: m, n, k, info
-    double precision :: x(m, n), sdev(k), trot(k, n)
+    integer, intent(in) :: m, n
+    integer, intent(out) :: info
+    double precision, intent(inout) :: x(m, n)
+    double precision, intent(out) :: sdev(*), rotation(*)
     ! local
-    double precision, allocatable :: cpx(:,:)
+    integer :: minmn
+    double precision :: tmp
+    double precision, allocatable :: u(:,:), cpx(:,:)
     
+    
+    minmn = min(m, n)
     
     ! allocations
     allocate(cpx(m, n))
     
     call dlacpy('a', m, n, x, m, cpx, m)
-    ! compute pc's
-    call prcomp_svd_work(m, n, k, cpx, sdev, trot, retrot, centerx, scalex, info)
-      
-!    if (retrot == true) then ! return rotated x
-!      ! x = x %*% t(rot)            c := alpha*op(a)*op(b) + beta*c
-!      call dgemm('n', 't', m, n, k, 1.0d0, cpx, m, trot, k, 0.0d0, cpx, m)
-!    end if
     
-    deallocate(cpx)
+    allocate(u(m, minmn))
+    
+    
+    ! center/scale
+    if (centerx == true .and. scalex == true) then
+      call center_scale(m, n, cpx)
+    else if (centerx == true) then
+      call center(m, n, cpx)
+    else if (scalex == true) then
+      call scaler(m, n, cpx)
+    end if
+    
+    
+    ! compute svd
+    call svd(n, n, m, n, cpx, sdev, u, rotation, info)
+    
+    call xpose(minmn, n, rotation)
+    
+    if (retrot == true) then
+      call dgemm('n', 'n', m, minmn, n, 1.0d0, x, m, rotation, n, 0.0d0, x, m)
+    end if
+    
+    
+    ! normalize singular values
+    tmp = 1.0d0 / max(1.0d0, dsqrt(dble(m-1)))
+    call dscal(minmn, tmp, sdev, 1)
+    
+    
+    if (allocated(u)) deallocate(u)
+    if (allocated(cpx)) deallocate(cpx)
     
     return
   end subroutine

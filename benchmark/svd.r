@@ -4,7 +4,7 @@ library(pcapack)
 
 set.seed(1234)
 m <- 2000
-n <- 500
+n <- 250
 x <- matrix(rnorm(m*n), m, n)
 
 reps <- 5

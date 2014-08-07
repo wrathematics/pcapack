@@ -3,8 +3,7 @@ library(pcapack)
 set.seed(1234)
 
 m <- 10
-n <- 5
-k <- min(m, n)
+n <- 50
 
 x <- matrix(rnorm(m*n), m, n)
 

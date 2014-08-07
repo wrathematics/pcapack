@@ -11,14 +11,16 @@
 SEXP make_pca_default_colnames(const int n);
 
 // 
-SEXP R_pca(SEXP M, SEXP N, SEXP K, SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
+SEXP R_pca(SEXP M, SEXP N, SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
 {
   R_INIT;
-  const int m = INT(M), n = INT(N), k = INT(K);
+  const int m = INT(M), n = INT(N);
   bool retrot = (bool) INTEGER(RETROT)[0];
   bool center = (bool) INTEGER(CENTER)[0];
   bool scale = (bool) INTEGER(SCALE)[0];
   int info = 0;
+  
+  const int k = m<n?m:n;
   
   SEXP RET, RET_NAMES, SDEV, TROT;
   SEXP pcnames, dimnames;
@@ -27,7 +29,7 @@ SEXP R_pca(SEXP M, SEXP N, SEXP K, SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
   newRvec(SDEV, k, "double");
   newRmat(TROT, k, n, "double");
   
-  prcomp_svd_(&m, &n, &k, DBLP(X), DBLP(SDEV), DBLP(TROT), &retrot, &center, &scale, &info);
+  prcomp_svd_(&m, &n, DBLP(X), DBLP(SDEV), DBLP(TROT), &retrot, &center, &scale, &info);
   
 /*  if (info != 0)*/
 /*    error(_("info=%d from Lapack routine '%s'"), info, "dgesdd");*/

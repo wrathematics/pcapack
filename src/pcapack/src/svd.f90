@@ -39,10 +39,8 @@ module svds
     ! allocations
     if (nu == 0 .and. nv == 0) then
       jobz = 'n'
-!    else if (nu == 0) then
-!      
-!    else if (nv == 0) then
-!      
+    else if ((nu == 0 .and. m >= n) .or. (nv == 0 .and. m < n)) then
+      jobz = 'o'
     else if (nu <= minmn .and. nv <= minmn) then
       jobz = 's'
     else
