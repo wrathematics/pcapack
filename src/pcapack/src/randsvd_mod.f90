@@ -70,6 +70,7 @@ module randsvd_mod
   
   contains
   
+  subroutine randsvd(nu, nv, m, n, x, s, u, vt, info)
   subroutine randsvd(method, jobu, jobvt, m, n, a, k, q, s, u, vt, info)
     ! in/out
     character*1         method, jobu, jobvt
@@ -167,15 +168,15 @@ module randsvd_mod
     
     return
   end
-
-
-
-
+  
+  
+  
+  
   ! ------------------------------------------------------
   ! internal subroutines
   ! ------------------------------------------------------
-
-
+  
+  
   ! initialize omega, such as via random normal generation.
   subroutine randsvd_omega_init(method, n, k, omega, info)
     ! in/out
@@ -201,10 +202,9 @@ module randsvd_mod
     
     return
   end
-
-
-
-
+  
+  
+  
   ! stage a from the paper, with the orthonormalization step
   subroutine randsvd_stage_a(m, n, k, q, a, y, u, omega, work, lwork, info)
     ! in/out
@@ -214,8 +214,6 @@ module randsvd_mod
     integer :: j
     integer :: allocerr
     double precision, allocatable :: tau(:)
-    ! subroutines
-    external            dgemm, dgesvd, drandsvd_subspaceiter
     
     
     allocate(tau(k), stat=allocerr)
@@ -240,8 +238,7 @@ module randsvd_mod
     ! general
     do j = 2, q
       call randsvd_subspaceiter(m, n, k, q, a, u, y, tau, work, lwork, info)
-      if (info /= 0) goto 1
-      
+      if (info /= 0) exit
     end do
     
     
@@ -252,17 +249,14 @@ module randsvd_mod
     
     return
   end
-
-
-
+  
+  
+  
   subroutine randsvd_subspaceiter(m, n, k, q, a, u, y, tau, work, lwork, info)
     ! in/out
     integer :: m, n, k, q, lwork, info
     double precision :: a(*), u(*), y(*), tau(*), work(*)
     ! local
-    !
-    ! subroutines
-    external            dgemm, dgeqrf, dorgqr
     
     
     ! twy_j = a^t * q_j-1
@@ -282,72 +276,6 @@ module randsvd_mod
     if (info /= 0) return
     call dorgqr(m, n, k, y, m, tau, work, lwork, info)
     if (info /= 0) return
-    
-    
-    return
-  end
-
-
-
-
-  subroutine randsvd_stage_b(jobu, jobvt, m, n, k, a, y, s, u, vt, work, lwork, info)
-    ! in/out
-    character*1         jobu, jobvt
-    integer :: m, n, k, info
-    double precision :: a(*), y(*), s(*), u(*), vt(*), work(*)
-    ! local
-    integer :: lwork, qr, qc, br, bc, ur, uc, rc_min
-    integer :: allocerr
-    double precision, allocatable :: b(:)
-    ! subroutines
-    external            dgemm, dgesvd
-    
-    
-    rc_min = min(m, n)
-    
-    br = min(rc_min, 2*k)
-    bc = n
-    
-    qr = m
-    qc = bc
-    
-    ur = m
-    uc = min(n, 2*k)
-    
-    allocate(b(qc * n), stat=allocerr)
-    if (allocerr /= 0) goto 1
-    
-    
-    ! b = q^t * a
-    call dgemm('t', 'n', qc, n, qr, 1.0d0, y, qr, a, m, 0.0d0, b, qc)
-    
-    
-    ! twu = the u part of the svd of b
-    if (jobu == 'v') then
-      call dgesvd('o', jobvt, qc, n, b, qc, s, 1.0d0, 1, vt, n, work, lwork, info)
-      
-      ! u = q * twu
-      call dgemm('n', 'n', qr, qc, qc, 1.0d0, y, qr, b, qc, 0.0d0, u, m)
-      
-      
-      ! u = u[, 1:k]
-      
-      
-      if (info /= 0) goto 1
-    else
-      call dgesvd('n', jobvt, qc, n, b, qc, s, 1.0d0, 1, vt, n,  work, lwork, info)
-      
-      
-      ! vt = vt[1:k, ]
-      
-      
-      if (info /= 0) goto 1
-    end if
-    
-    
-    
-  1    continue
-    deallocate(b)
     
     
     return
