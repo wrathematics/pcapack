@@ -5,7 +5,7 @@
 ! Copyright 2013-2014, Schmidt
 
 
-module svds
+module svd_mod
   use :: lapack, only : dgemm, dscal, dlacpy, dgesdd
   use, intrinsic :: iso_c_binding
   use :: cbool

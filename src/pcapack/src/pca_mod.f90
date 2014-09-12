@@ -55,12 +55,12 @@
 !  info     (output) integer
 !           lapack-style error return.  
 
-module pca
+module pca_mod
   use :: lapack
   use, intrinsic :: iso_c_binding
   use :: sweeps
   use :: cbool
-  use :: svds
+  use :: svd_mod
   use :: transposition
   implicit none
   

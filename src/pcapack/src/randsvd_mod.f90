@@ -61,7 +61,7 @@
 module randsvd_mod
   use :: lapack
   use, intrinsic :: iso_c_binding
-  use :: svds
+  use :: svd_mod
   implicit none
   
   
