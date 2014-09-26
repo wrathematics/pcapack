@@ -9,7 +9,7 @@ void LA_svd_(int *nu, int *nv, int *m, int *n, double *x, double *s,
 SEXP R_pcapack_svd(SEXP NU, SEXP NV, SEXP M, SEXP N, SEXP X)
 {
   R_INIT;
-  const int m = INT(M), n = INT(N);
+  int m = INT(M), n = INT(N);
   int info = 0;
   const int minmn = MIN(m, n);
   

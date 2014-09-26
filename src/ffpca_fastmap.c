@@ -1,15 +1,20 @@
 #include "ffpca.h"
 
+void cma_(int *n, int *p, double *x, int *k, int *info);
+
 // 
-SEXP R_cma(SEXP M, SEXP N, SEXP X, SEXP K)
+SEXP R_cma(SEXP X, SEXP K)
 {
-  const int m = INTEGER(M)[0], n = INTEGER(N)[0];
+  int m = nrows(X), n = ncols(X);
+  int info = 0;
   SEXP CPX;
   PROTECT(CPX = allocMatrix(REALSXP, m, n));
   
   memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
   
-  cma_(&m, &n, REAL(CPX), INTEGER(K));
+  cma_(&m, &n, REAL(CPX), INTEGER(K), &info);
+  
+  if (info != 0) error("TODO\n");
   
   UNPROTECT(1);
   return CPX;
