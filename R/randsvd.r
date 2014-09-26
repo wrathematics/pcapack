@@ -97,7 +97,8 @@ rand.svd_F <- function(A, k, q, compute.u, compute.vt)
   else
     compute.vt <- 'N'
   
-  ret <- .Call("R_randsvd", method, m, n, A, as.integer(k), as.integer(q), compute.u, compute.vt)
+  ret <- .Call("R_randsvd", method, m, n, A, as.integer(k), as.integer(q), compute.u, compute.vt, 
+                PACKAGE="pcapack")
   
   return( ret )
 }

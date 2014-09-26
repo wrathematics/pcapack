@@ -1,5 +1,3 @@
-# Copyright 2013, Schmidt
-
 is.int <- function(x)
 {
   if (is.numeric(x))
