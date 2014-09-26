@@ -9,7 +9,7 @@ set(CMAKE_Fortran_MODULE_DIRECTORY "include/")
 
 ### Flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wfatal-errors -O3 -fPIC")
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wfatal-errors -O3 -fPIC -g")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wfatal-errors -O3 -fPIC")
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -42,6 +42,12 @@ endif()
 
 
 ### Source files
+set(RAND
+	src/rand/old/rand.c
+	src/rand/old/rand_mt.c
+	src/rand/old/rand_normal.c
+)
+
 set(SUMSTATS
 	src/sumstats/covariance_utils.f90
 	src/sumstats/covariance.f90
@@ -63,12 +69,13 @@ set(UTILS
 )
 
 SET(PCA
-	src/pca.f90
-	src/svd.f90
+	src/pca_mod.f90
+	src/svd_mod.f90
+	src/fastmap_mod.f90
 )
 
 
-set(PCAPACK_FILES ${SUMSTATS} ${UTILS} ${PCA})
+set(PCAPACK_FILES ${RAND} ${SUMSTATS} ${UTILS} ${PCA})
 
 
 ### Make and install

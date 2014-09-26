@@ -6,29 +6,29 @@
 
 
 
-! purpose
+! Purpose
 ! =======
 ! 
 ! 
 !
 !
-! notes
+! Notes
 ! =====
 !
-! the randomized svd method from the paper halko, martinsson, and tropp
-! 2011, "finding structure with randomness: probabilistic algorithms 
-! for constructing approximate matrix decompositions", siam review 
-! 53, 217-288
+! The randomized svd method from the paper Halko, Martinsson, and Tropp
+! 2011, "Finding Structure with Randomness: Probabilistic Algorithms 
+! for Constructing Approximate Matrix Decompositions", SIAM Review 
+! 53, 217-288.
 !
-! we implement the method from the paper in 2 ways.  the first is 
+! We implement the method from the paper in 2 ways.  The first is 
 ! "as is", using a random normal matrix generation for the test
-! matrix omega.  additionally, we use the fastmap algorithm to 
+! matrix omega.  Additionally, we use the fastmap algorithm to 
 ! generate the matrix omega.
 !
-! algorithm is o(m*n*k); see the paper for details.
+! Complexity is O(m*n*k); see the paper for details.
 !
 !
-! arguments
+! Arguments
 ! =========
 !
 !  m, n     (input) integer
@@ -62,7 +62,12 @@ module randsvd_mod
   use :: lapack
   use, intrinsic :: iso_c_binding
   use :: svd_mod
+  intrinsic :: min, max
   implicit none
+  
+  
+  integer, public, parameter :: pcapack_randsvd_randinit    = 1
+  integer, public, parameter :: pcapack_randsvd_fastmapinit = 2
   
   
   private :: randsvd_omega_init
@@ -70,7 +75,7 @@ module randsvd_mod
   
   contains
   
-  subroutine randsvd(nu, nv, m, n, x, s, u, vt, info)
+!  subroutine randsvd(nu, nv, m, n, x, s, u, vt, info)
   subroutine randsvd(method, jobu, jobvt, m, n, a, k, q, s, u, vt, info)
     ! in/out
     character*1         method, jobu, jobvt
@@ -79,42 +84,29 @@ module randsvd_mod
     ! local
     integer :: i, lwork, rc_min, rc_max
     integer :: allocerr
-    double precision :: tmp
+    double precision :: arrtmp(1), tmp
     double precision, allocatable, dimension(:) ::  omega, work, y, atmp
-    ! subroutines
-    intrinsic           min, max
     
     
     info = 0
     allocerr = 0
     
     
-    !!! quick return if possible
-    if (m < 1 .or. n < 1) then
-      return
-    end if
+    if (m < 1 .or. n < 1) return
     
     if (method /= 'r' .or. method /= 'f') then
       info = -1
       return
-    end if
-    
-    if (jobu /= 'v' .or. jobu /= 'n') then
+    else if (jobu /= 'v' .or. jobu /= 'n') then
       info = -2
       return
-    end if
-    
-    if (jobvt /= 'v' .or. jobvt /= 'n') then
+    else if (jobvt /= 'v' .or. jobvt /= 'n') then
       info = -3
       return
-    end if
-    
-    if (k.gt.n .or. k < 1) then
+    else if (k > n .or. k < 1) then
       info = -7
       return
-    end if
-    
-    if (q < 1) then
+    else if (q < 1) then
       info = -9
       return
     end if
@@ -123,47 +115,39 @@ module randsvd_mod
     rc_max = max(m, n)
     
     
-    !!! allocate and initializeomega=nx2k
+    ! allocate and initializeomega=nx2k
     allocate(omega(n*2*k), stat=allocerr)
     call randsvd_omega_init(method, n, k, omega, info)
     
     
-    !!! allocate workspace
-  !      call dgeqrf(m, n, y, m, tau, tmp, -1, info)
-  !      lwork = int(tmp)
-    ! fixme
-    lwork = 10000
+    ! allocate workspace
+    call dgeqrf(m, 2*k, y, m, tau, arrtmp, -1, info)
+    lwork = int(arrtmp(1))
+!    ! fixme
+!    lwork = 10000
     allocate(work(lwork), stat=allocerr)
-    
-    
-    !!! allocate 
-    
     allocate(atmp(m*n), stat=allocerr)
-    
-    ! allocate y=mx2k
-    allocate(y(m*2*k), stat=allocerr)
+    allocate(y(m*2*k), stat=allocerr) ! m x (2*k)
     
     
-    !!! stage a
+    ! stage a
     call randsvd_stage_a(m, n, k, q, a, y, u, omega, work, lwork, info)
     if (info /= 0) goto 1
     
     
-    !!! stage b
+    ! stage b
     call randsvd_stage_b(jobu, jobvt, m, n, k, a, y, s, u, vt, work, lwork, info)
     if (info /= 0) goto 1
     
     
-    
-    !!! free and return
-  1    continue
-    
+    ! free and return
+    1 continue
     write (*,*) info
     
-    deallocate(omega)
-    deallocate(work)
-    deallocate(atmp)
-    deallocate(y)
+    if (allocated(omega)) deallocate(omega)
+    if (allocated(work))  deallocate(work)
+    if (allocated(atmp))  deallocate(atmp)
+    if (allocated(y))     deallocate(y)
     
     
     return

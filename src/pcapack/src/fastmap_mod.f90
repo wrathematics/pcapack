@@ -5,55 +5,71 @@
 ! Copyright 2013-2014, Schmidt
 
 
-! purpose
+! Purpose
 ! =======
-! this routine computes 
+! cma computes ...
 !
 !
-! notes
+! Notes
 ! =====
-!
+! Implementation of the fastmap coordinate mapping algorithm:
+! "A Matrix Computation View of Fastmap and Robustmap Dimension 
+! Reduction Algorithms", George Ostrouchov, SIAM J. Matrix Anal. 
+! appl.
 ! 
 !
 !
-! arguments
+! Arguments
 ! =========
 !
 !  m, n     (input) integer
 !           the number of rows and columns of the input matrix a.
 !
-
-
-
-! implementation of the fastmap coordinate mapping algorithm:
-! "a matrix computation view of fastmap and robustmap dimension reduction algorithms", 
-! george ostrouchov, siam j. matrix anal. appl.
+!  x        (in/out) double precision
+!           On input, x is the data matrix, and is overwritten with 
+!           estimates for the first k principal components.
 !
-! x is overwritten with estimates for the first k principal components.
+!  k        (input) integer
+!           
+!
+!  info     (output) integer
+!           Error numbering.
+
 module fastmap_mod
   use :: lapack
+  use :: sgns
+  use :: sweeps
   use, intrinsic :: iso_c_binding
   implicit none
   
   
-  subroutine cma(n, p, x, k, info)
+  integer, public, parameter :: pcapack_oom = -2147483647
+  
+  public :: cma, fastmap
+  
+  contains
+  
+  subroutine cma(n, p, x, k, info) &
+  bind(C, name='cma_')
     !in/out
-    integer :: n, p, k, info
-    double precision :: x(n, p)
+    integer, intent(in) :: n, p, k
+    integer, intent(out) :: info
+    double precision, intent(inout) :: x(n, p)
     ! local
     integer :: i, j, l, ncol, allocerr
     double precision, allocatable :: a(:), b(:), y(:), work(:)
     double precision :: tmp, best
-    ! parameters
-    double precision :: zero, one
-    parameter( zero = 0.0d0, one = 1.0d0 )
     
     
     info = 0
     
-    ! quick return if possible
-    if (k.gt.n) then
-      info = -4
+    if (n < 1 .or. p < 1) return
+    
+    if (k > n) then
+      info = -1
+      return
+    else if (k > p) then
+      info = -2
       return
     end if
     
@@ -65,9 +81,9 @@ module fastmap_mod
     allocate(y(n), stat=allocerr)
     allocate(work(p), stat=allocerr)
     
-    if (allocerr.ne.0) then
-      info = 1
-      return
+    if (allocerr /= 0) then
+      info = pcapack_oom
+      goto 1
     end if
     
     
@@ -76,29 +92,30 @@ module fastmap_mod
       ncol = p-i+1
       
       ! select pivot row pair
-      call fastmap(n, ncol, i, x(1,i), a, b, work)
+      call fastmap(n, ncol, x(1,i), a, b, work)
       
       ! translate rows to pivot origin
-      call dsweep(n, ncol, x(1, i), a, ncol, 2, "-")
+      call sweep(n, ncol, x(1, i), a, ncol, 2, "-")
       
       ! apply householder reflection on right
       call daxpy(ncol, -1.0d0, a, 1, b, 1)
       
-      b(1) = dsgn(b(1)) * dnrm2(ncol, b, 1) + b(1)
+      b(1) = sgn(b(1)) * dnrm2(ncol, b, 1) + b(1)
       
       tmp = dnrm2(p, b, 1)
       b(1:ncol) = b(1:ncol) / tmp
       
-      call dgemv('n', n, ncol, one, x(1,i), n, b, 1, zero, y, 1)
+      call dgemv('n', n, ncol, 1.0d0, x(1,i), n, b, 1, 0.0d0, y, 1)
       
       call dger(n, ncol, -2.0d0, y, 1, b, 1, x(1,i), n)
     end do
     
     
-    deallocate(a)
-    deallocate(b)
-    deallocate(y)
-    deallocate(work)
+    1 continue
+    if (allocated(a)) deallocate(a)
+    if (allocated(b)) deallocate(b)
+    if (allocated(y)) deallocate(y)
+    if (allocated(work)) deallocate(work)
     
     
     return
@@ -106,17 +123,20 @@ module fastmap_mod
   
   
   
-  ! fastmap pivot selection; store the distances
-  subroutine fastmap(n, ncol, num, x, a, b, work)
+  ! fastmap pivot selection
+    ! Working on the right ncol columns of x
+    ! a is the point (in x) furthest from a random vector in x
+    ! b is the point (in x) furthest from point a
+    ! work is a workspace array
+  subroutine fastmap(n, ncol, x, a, b, work) &
+  bind(C, name='fastmap_')
     !in/out
-    integer :: n, ncol, num
-    double precision :: x(n, ncol), a(ncol), b(ncol), work(ncol)
+    integer, intent(in) :: n, ncol
+    double precision, intent(in) :: x(n, ncol)
+    double precision, intent(out) :: a(ncol), b(ncol), work(ncol)
     ! local
     integer :: i, j, ia, ib
     double precision :: tmp, best
-    ! parameters
-    double precision :: zero, one, neg1
-    parameter( zero = 0.0d0, one = 1.0d0, neg1 = -1.0d0 )
     
     
     ! pick random b in x
@@ -126,15 +146,15 @@ module fastmap_mod
     
     
     ! compute all distances in x from b
-    best = zero
+    best = 0.0d0
     
     do i = 1, n
-      work = neg1 * x(i, :)
-      call daxpy(n, one, b, 1, work, 1)
+      work = -1.0d0 * x(i, :)
+      call daxpy(ncol, 1.0d0, b, 1, work, 1)
       tmp = dnrm2(ncol, work, 1)
       
       ! let a in x be the most distant point from b
-      if (tmp.gt.best) then
+      if (tmp > best) then
         best = tmp
         ia = i
       end if
@@ -144,15 +164,15 @@ module fastmap_mod
     
     
     ! compute all distances in x from a
-    best = zero
+    best = 0.0d0
     
     do i = 1, n
-      work = neg1 * x(i, :)
-      call daxpy(n, one, a, 1, work, 1)
+      work = -1.0d0 * x(i, :)
+      call daxpy(ncol, 1.0d0, a, 1, work, 1)
       tmp = dnrm2(ncol, work, 1)
       
       ! let b in x be the most distant point from a
-      if (tmp.gt.best) then
+      if (tmp > best) then
         best = tmp
         ia = i
       end if
@@ -163,19 +183,5 @@ module fastmap_mod
     
     return
   end
-  
-  
-  !!!!!$omp parallel if (n > 100)
-  !!!!  !$omp do shared(n, m, x) private(j, i) &
-  !!!!  !$omp default(none) schedule(static,chunk) &
-  !!!!        do i = 1, j-1
-  !!!!          do j = 1, n
-  !!!!            x(j, i) = x(i, j)
-  !!!!          end do
-  !!!!        end do 
-  !!!!  !$omp end do
-  !!!!!$omp end parallel
-  
-  
   
 end module
