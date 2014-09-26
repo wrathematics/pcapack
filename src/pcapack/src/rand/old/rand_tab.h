@@ -2,7 +2,7 @@
 #define RAND_TAB_H
 
 
-#include "../include/rand.h"
+#include "rand.h"
 
 extern const double zig_tab_x[ZT_SIZE];
 extern const double snp_zig_tab_x[ZT_SIZE];

@@ -8,7 +8,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "../include/rand.h"
+#include "rand.h"
 #include "rand_tab.h"
 /*#include "../../include/rand_mt.h"*/
 /*#include "../../include/rand_uniform.h"*/
