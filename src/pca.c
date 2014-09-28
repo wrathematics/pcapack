@@ -1,6 +1,4 @@
-#include "ffpca.h"
-#include <stdbool.h>
-#include <RNACI.h>
+#include "pcapack.h"
 
 #define setDimNames(X, Y, Z) \
   newRlist(X, 2); \
@@ -8,9 +6,7 @@
   SET_VECTOR_ELT(X, 1, Y); \
   setAttrib(Z, R_DimNamesSymbol, X);
 
-SEXP make_pca_default_colnames(const int n);
 
-// 
 SEXP R_pca(SEXP M, SEXP N, SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
 {
   R_INIT;

@@ -1,10 +1,5 @@
-#include "ffpca.h"
-#include <stdbool.h>
-#include <RNACI.h>
+#include "pcapack.h"
 
-
-void LA_svd_(int *nu, int *nv, int *m, int *n, double *x, double *s, 
-  double *u, double *vt, int *info);
 
 SEXP R_pcapack_svd(SEXP NU, SEXP NV, SEXP M, SEXP N, SEXP X)
 {

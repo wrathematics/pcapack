@@ -1,8 +1,8 @@
-#include "ffpca.h"
+#include "pcapack.h"
 
 void cma_(int *n, int *p, double *x, int *k, int *info);
 
-// 
+
 SEXP R_cma(SEXP X, SEXP K)
 {
   int m = nrows(X), n = ncols(X);
