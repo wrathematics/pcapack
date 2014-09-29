@@ -62,6 +62,7 @@ module pca_mod
   use :: cbool
   use :: svd_mod
   use :: transposition
+  use :: covariance
   implicit none
   
   
@@ -123,9 +124,28 @@ module pca_mod
   end subroutine
   
   
-  
-! principal components via eigenvalue decomposition of covariance matrix
-!  subroutine prcomp_eig(m, n, k, x, sdev, trot, retrot, center, scalex, info)
+  !!! TODO
+!  subroutine prcomp_eig(m, n, k, x, sdev, trot, retrot, center, scalex, info) &
+!  bind(C, name='prcomp_eig_')
+!    ! in/out
+!    logical(kind=c_bool), intent(in) :: retrot, centerx, scalex
+!    integer, intent(in) :: m, n
+!    integer, intent(out) :: info
+!    double precision, intent(inout) :: x(m, n)
+!    double precision, intent(out) :: sdev(*), rotation(*)
+!    ! local
+!    integer :: minmn
+!    double precision :: tmp
+!    double precision, allocatable :: u(:,:), covmat(:,:)
+!    
+!    
+!    
+!    allocate(covmat(n, n))
+!    
+!    call cov(n, n, x, covmat)
+!    
+!    
+!    if (allocated(covmat)) deallocate(covmat)
 !    
 !    return
 !  end subroutine

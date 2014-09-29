@@ -2,6 +2,7 @@
 #define R_PCAPACK_H
 
 
+#include "pcapack/src/pcapack.h"
 #include <stdbool.h>
 #include <RNACI.h>
 
@@ -15,13 +16,7 @@
 #define MAX(m,n) m<n?n:m
 
 
-// Whatever
 SEXP make_pca_default_colnames(const int n);
-
-
-// LAPACK and BLAS
-void LA_svd_(int *nu, int *nv, int *m, int *n, double *x, double *s, 
-  double *u, double *vt, int *info);
 
 
 #endif
