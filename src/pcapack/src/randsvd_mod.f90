@@ -70,15 +70,20 @@ module randsvd_mod
   integer, public, parameter :: pcapack_randsvd_fastmapinit = 2
   
   
-  private :: randsvd_omega_init
+  integer, public, parameter :: pcapack_randsvd_badmethod = -3
+  
+  
   public :: randsvd
+  private :: randsvd_stage_a, randsvd_stage_b, randsvd_subspaceiter
+  
   
   contains
   
 !  subroutine randsvd(nu, nv, m, n, x, s, u, vt, info)
-  subroutine randsvd(method, jobu, jobvt, m, n, a, k, q, s, u, vt, info)
+  subroutine randsvd(nu, nv, method, m, n, a, k, q, s, u, vt, info)
     ! in/out
-    character*1         method, jobu, jobvt
+    integer :: nu, nv
+    integer :: method
     integer :: m, n, k, q, info
     double precision :: a(*), s(*), u(*), vt(*)
     ! local
@@ -94,14 +99,8 @@ module randsvd_mod
     
     if (m < 1 .or. n < 1) return
     
-    if (method /= 'r' .or. method /= 'f') then
-      info = -1
-      return
-    else if (jobu /= 'v' .or. jobu /= 'n') then
-      info = -2
-      return
-    else if (jobvt /= 'v' .or. jobvt /= 'n') then
-      info = -3
+    if (method /= pcapack_randsvd_randinit .and. method /= pcapack_randsvd_fastmapinit) then
+      info = pcapack_randsvd_badmethod
       return
     else if (k > n .or. k < 1) then
       info = -7
@@ -117,7 +116,15 @@ module randsvd_mod
     
     ! allocate and initializeomega=nx2k
     allocate(omega(n*2*k), stat=allocerr)
-    call randsvd_omega_init(method, n, k, omega, info)
+    
+    ! initialize omega, such as via random normal generation.
+    ! random (standard) normal initialization
+    if (method == pcapack_randsvd_randinit) then
+      call rnormn(n*2*k, 0.0d0, 1.0d0, omega)
+    ! fastmap initialization
+    else if (method == pcapack_randsvd_fastmapinit) then
+      ! fixme
+    end if
     
     
     ! allocate workspace
@@ -136,7 +143,7 @@ module randsvd_mod
     
     
     ! stage b
-    call randsvd_stage_b(jobu, jobvt, m, n, k, a, y, s, u, vt, work, lwork, info)
+    call randsvd_stage_b(nu, nv, m, n, k, a, y, s, u, vt, work, lwork, info)
     if (info /= 0) goto 1
     
     
@@ -159,34 +166,6 @@ module randsvd_mod
   ! ------------------------------------------------------
   ! internal subroutines
   ! ------------------------------------------------------
-  
-  
-  ! initialize omega, such as via random normal generation.
-  subroutine randsvd_omega_init(method, n, k, omega, info)
-    ! in/out
-    character*1         method
-    integer :: n, k, info
-    double precision :: omega(*)
-    ! subroutines
-    external            rnormn
-    
-    
-    ! random (standard) normal initialization
-    if (method == 'r') then
-      call rnormn(n*2*k, 0.0d0, 1.0d0, omega)
-    ! fastmap initialization
-    else if (method == 'f') then
-      ! fixme
-    ! bad argument 'method'
-    else
-      info = -1
-      return
-    end if
-    
-    
-    return
-  end
-  
   
   
   ! stage a from the paper, with the orthonormalization step
@@ -213,13 +192,9 @@ module randsvd_mod
     
     
     !!! main loop
-    
-    ! i = 1
     call randsvd_subspaceiter(m, n, k, q, a, u, y, tau, work, lwork, info)
     if (info /= 0) goto 1
     
-    
-    ! general
     do j = 2, q
       call randsvd_subspaceiter(m, n, k, q, a, u, y, tau, work, lwork, info)
       if (info /= 0) exit
@@ -227,9 +202,9 @@ module randsvd_mod
     
     
     ! free and return
-  1    continue
+    1 continue
     
-    deallocate(tau)
+    if allocated(tau) deallocate(tau)
     
     return
   end
@@ -240,7 +215,6 @@ module randsvd_mod
     ! in/out
     integer :: m, n, k, q, lwork, info
     double precision :: a(*), u(*), y(*), tau(*), work(*)
-    ! local
     
     
     ! twy_j = a^t * q_j-1
@@ -261,9 +235,30 @@ module randsvd_mod
     call dorgqr(m, n, k, y, m, tau, work, lwork, info)
     if (info /= 0) return
     
-    
     return
   end
+  
+  
+  
+!  subroutine randsvd_stage_b(nu, nv, m, n, x, s, u, vt, info)
+!    
+!    
+!    B <- t(Q) %*% A
+!    
+!    if (!compute.u)
+!      nu <- 0
+!    else
+!      nu <- min(nrow(B), ncol(B))
+!    
+!    if (!compute.vt)
+!      nv <- 0
+!    else
+!      nv <- min(nrow(B), ncol(B))
+!    
+!    svd.B <- La.svd(x=B, nu=nu, nv=nv)
+!    call svd(nu, nv, m, n, x, s, u, vt, info)
+!    
+!  end subroutine
   
   
 end module
