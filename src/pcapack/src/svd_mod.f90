@@ -47,11 +47,9 @@ module svd_mod
       jobz = 'a'
     end if
     
-    
     allocate(cpx(m, n))
     cpx = x
     
-    ! allocations
     allocate(iwork(8*minmn))
     
     lwork = -1
@@ -59,13 +57,11 @@ module svd_mod
     lwork = int(tmp(1))
     allocate(work(lwork))
     
-    
-    ! compute svd
     call dgesdd(jobz, m, n, cpx, m, s, u, m, vt, minmn, work, lwork, iwork, info)
     
-!    deallocate(iwork)
-!    deallocate(work)
-!    deallocate(cpx)
+    deallocate(iwork)
+    deallocate(work)
+    deallocate(cpx)
     
     return
   end subroutine
