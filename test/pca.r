@@ -11,7 +11,8 @@ x <- matrix(rnorm(m*n), m, n)
 test <- function()
 {
   mdl1 <- prcomp(x)
-  mdl2 <- pca(x)
+  mdl2 <- pca(x, method="svd")
+  mdl3 <- pca(x, method="svd")
   
 #  all.equal(mdl1, mdl2)
   print(all.equal(mdl1$sdev, mdl2$sdev))
