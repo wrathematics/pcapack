@@ -69,9 +69,10 @@ set(UTILS
 )
 
 SET(PCA
-	src/pca_mod.f90
-	src/svd_mod.f90
-	src/fastmap_mod.f90
+	src/svd.c
+#	src/pca_mod.f90
+#	src/svd_mod.f90
+#	src/fastmap_mod.f90
 )
 
 

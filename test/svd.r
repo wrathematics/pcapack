@@ -4,10 +4,10 @@ set.seed(1234)
 
 test <- function(x, nu, nv)
 {
-  LA_svd(x, nu, nv)
-  La.svd(x, nu, nv)
+  m1 <- LA_svd(x, nu, nv)
+  m2 <- La.svd(x, nu, nv)
   
-  check <- all.equal(LA_svd(x), La.svd(x))
+  check <- all.equal(m1, m2)
   
   cat(paste("nu=", nu, " nv=", nv, ":\t", check, "\n", sep=""))
   invisible()
@@ -33,5 +33,5 @@ suite <- function(m, n)
 #########################
 
 
-#suite(10, 5)
-suite(5, 10)
+suite(10, 5)
+#suite(5, 10)

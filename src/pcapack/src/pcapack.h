@@ -20,9 +20,9 @@ void prcomp_svd_(int *m, int *n, double *x, double *sdev,
   double *rotation, bool *retrot, bool *centerx, bool *scalex, 
   int *info);
 
-// svd_mod.f90
-void LA_svd_(int *nu, int *nv, int *m, int *n, double *x, double *s, 
-  double *u, double *vt, int *info);
+//// svd_mod.f90
+//void LA_svd_(int *nu, int *nv, int *m, int *n, double *x, double *s, 
+//  double *u, double *vt, int *info);
 
 
 #endif

@@ -12,7 +12,7 @@ test <- function()
 {
   mdl1 <- prcomp(x)
   mdl2 <- pca(x, method="svd")
-  mdl3 <- pca(x, method="svd")
+#  mdl3 <- pca(x, method="svd", retx=FALSE)
   
 #  all.equal(mdl1, mdl2)
   print(all.equal(mdl1$sdev, mdl2$sdev))
