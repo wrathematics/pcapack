@@ -43,14 +43,14 @@ SEXP R_pcapack_svd(SEXP NU, SEXP NV, SEXP M, SEXP N, SEXP X)
   }
   else
   {
-    newRmat(U, m, n, "dbl");
+    newRmat(U, m, m, "dbl");
     newRmat(VT, n, n, "dbl");
     u = REAL(U);
     vt = REAL(VT);
   }
   
   
-  info = La_svd(INT(NU), INT(NV), m, n, DBLP(X), DBLP(S), u, vt);
+  info = pcapack_svd(INT(NU), INT(NV), m, n, DBLP(X), DBLP(S), u, vt);
   
 /*  if (info != 0)*/
 /*    error(_("info=%d from Lapack routine '%s'"), info, "dgesdd");*/

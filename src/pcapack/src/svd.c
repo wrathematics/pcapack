@@ -1,14 +1,15 @@
 #include <stdlib.h>
+#include "pcapack.h"
 
 
-int La_svd(int nu, int nv, int m, int n, const double *x, double *s, double *u, double *vt)
+int pcapack_svd(const int nu, const int nv, int m, int n, const double *x, double *s, double *u, double *vt)
 {
   char jobz;
   int i;
   int info = 0;
-  int minmn, lwork, *iwork;
+  int lwork, *iwork;
   double tmp, *work, *cpx;
-  
+  const minmn = m<n ? m : n;
   
   if (nu == 0 && nv == 0)
     jobz = 'n';
@@ -19,8 +20,6 @@ int La_svd(int nu, int nv, int m, int n, const double *x, double *s, double *u, 
   else
     jobz = 'a';
   
-  
-  minmn = m<n ? m : n;
   
   cpx = malloc(m*n * sizeof(*cpx));
   for (i=0; i<m*n; i++)
@@ -40,13 +39,5 @@ int La_svd(int nu, int nv, int m, int n, const double *x, double *s, double *u, 
   
   return info;
 }
-
-
-/*
-int svd(int nu, int nv, int m, int n, double *x, double *s, double *u, double *vt)
-{
-  
-}
-*/
 
 
