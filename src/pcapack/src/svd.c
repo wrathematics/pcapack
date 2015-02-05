@@ -8,7 +8,7 @@ int pcapack_svd(const int nu, const int nv, int m, int n, const double *x, doubl
   int i;
   int info = 0;
   int lwork, *iwork;
-  double tmp, *work, *cpx;
+  double tmp, *work, *x_cp;
   const minmn = m<n ? m : n;
   
   if (nu == 0 && nv == 0)
@@ -21,19 +21,18 @@ int pcapack_svd(const int nu, const int nv, int m, int n, const double *x, doubl
     jobz = 'a';
   
   
-  cpx = malloc(m*n * sizeof(*cpx));
-  for (i=0; i<m*n; i++)
-    cpx[i] = x[i];
+  x_cp = malloc(m*n * sizeof(*x_cp));
+  memcpy(x_cp, x, m*n*sizeof(*x_cp));
   
   iwork = malloc(8*minmn * sizeof(*iwork));
   
   lwork = -1;
-  dgesdd_(&jobz, &m, &n, cpx, &m, s, u, &m, vt, &minmn, &tmp, &lwork, iwork, &info);
+  dgesdd_(&jobz, &m, &n, x_cp, &m, s, u, &m, vt, &minmn, &tmp, &lwork, iwork, &info);
   lwork = (int) tmp;
   work = malloc(lwork * sizeof(*work));
-  dgesdd_(&jobz, &m, &n, cpx, &m, s, u, &m, vt, &minmn, work, &lwork, iwork, &info);
+  dgesdd_(&jobz, &m, &n, x_cp, &m, s, u, &m, vt, &minmn, work, &lwork, iwork, &info);
   
-  free(cpx);
+  free(x_cp);
   free(work);
   free(iwork);
   

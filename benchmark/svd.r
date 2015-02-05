@@ -3,11 +3,11 @@ library(pcapack)
 
 
 set.seed(1234)
-m <- 2000
+m <- 4000
 n <- 250
 x <- matrix(rnorm(m*n), m, n)
 
-reps <- 5
+reps <- 10
 
 mine <- function() {mdl1 <<- LA_svd(x)}
 R <- function() {mdl2 <<- La.svd(x)}
