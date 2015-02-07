@@ -38,7 +38,7 @@ SEXP R_pca_svd(SEXP M, SEXP N, SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
   
   R_END;
   return RET;
-} 
+}
 
 
 

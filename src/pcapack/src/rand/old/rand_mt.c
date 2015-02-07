@@ -20,6 +20,16 @@ int mt_index = 0;
 unsigned int mt_initialized = 0;
 
 
+void mt_init_gen(const unsigned int seed)
+{
+    int i;
+    
+    MT[0]=seed;
+    
+    for(i=1;i<MT_SIZE;i++)
+        MT[i]=0xFFFFFFFF&(0x6C078965 * (MT[i-1] ^ ((MT[i-1])>>30)) + i);
+}
+
 void mt_init(unsigned int seed)
 {
     mt_init_gen(seed);
@@ -37,16 +47,6 @@ void mt_check()
         mt_init_gen(seed);
         mt_initialized = 1;
     }
-}
-
-void mt_init_gen(const unsigned int seed)
-{
-    int i;
-    
-    MT[0]=seed;
-    
-    for(i=1;i<MT_SIZE;i++)
-        MT[i]=0xFFFFFFFF&(0x6C078965 * (MT[i-1] ^ ((MT[i-1])>>30)) + i);
 }
 
 void mt_gen()
