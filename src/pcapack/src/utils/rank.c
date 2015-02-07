@@ -7,23 +7,26 @@
 
 
 // tiefighters
-static double tb_avg(const double **ptr, const double *data, const double *rank, const int index, const int len){
+static double tb_avg(const double **ptr, const double *data, const double *rank, const int index, const int len)
+{
   int i;
   double ret=0;
   const int end=len+index;
   
-  for(i=index; i<end; i++)
+  for (i=index; i<end; i++)
     ret += rank[RANK_INDEX(i)]/(double)len;
   
   return ret;
 }
 
-static double tb_min(const double **ptr, const double *data, const double *rank, const int index, const int len){
+static double tb_min(const double **ptr, const double *data, const double *rank, const int index, const int len)
+{
   int i;
   double ret=rank[RANK_INDEX(index)];
   const int end=len+index;
   
-  for(i=index; i<end; i++){
+  for (i=index; i<end; i++)
+  {
     if (rank[RANK_INDEX(i)] < ret)
       ret = rank[RANK_INDEX(i)];
   }
@@ -36,7 +39,8 @@ static double tb_max(const double **ptr, const double *data, const double *rank,
   double ret=rank[RANK_INDEX(index)];
   const int end=len+index;
   
-  for(i=index; i<end; i++){
+  for (i=index; i<end; i++)
+  {
     if (rank[RANK_INDEX(i)] > ret)
       ret = rank[RANK_INDEX(i)];
   }
@@ -45,25 +49,31 @@ static double tb_max(const double **ptr, const double *data, const double *rank,
 }
 
 
+
 // Rank functions
-static int runlength(const double **ptr, const int len){
-    int ret=1;
-    int i;
-        
-    for(i=1;i<len && *ptr[i]==*ptr[0];i++)
-        ret++;
-
-    return ret;
+static int runlength(const double **ptr, const int len)
+{
+  int ret=1;
+  int i;
+  
+  for (i=1;i<len && *ptr[i]==*ptr[0];i++)
+    ret++;
+  
+  return ret;
 }
 
-static int cmp_data(const void *a, const void *b){
-    const double da = **(double**)a;
-    const double db = **(double**)b;
 
-    if(da<db) return -1; 
-    else if(da>db) return 1;
-    else return 0;
+
+static int cmp_data(const void *a, const void *b)
+{
+  const double da = **(double**)a;
+  const double db = **(double**)b;
+  
+  if (da<db) return -1; 
+  else if (da>db) return 1;
+  else return 0;
 }
+
 
 
 static void rank1(const double *data, double *rank, const int len)
@@ -73,46 +83,53 @@ static void rank1(const double *data, double *rank, const int len)
   const double **ptr=malloc(sizeof(double*)*len);
   
   
-  for(i=0;i<len;i++)
+  for (i=0;i<len;i++)
     ptr[i]=data+i;
   
   qsort(ptr,len,sizeof(*ptr),cmp_data);
   
-  for(i=0;i<len;i++)
+  for (i=0;i<len;i++)
     rank[(ptr[i]-data)]=i+1;
   
-  for(i=0;i<len;i++)
+  for (i=0;i<len;i++)
     step=runlength(data+i,len-i);
   
   free(ptr);
 }
 
+
+
 // *data = input array to be ranked
 // *rank = output array, allocated by user
 // len = length of data
 // (other crap) = callback for tiebreaker, e.g. tb_avg
-static void rank2(const double *data, double *rank, const int len, double (*tiefighter)(const double **ptr, const double *data, const double *rank, const int index, const int len)){
+static void rank2(const double *data, double *rank, const int len, double (*tiefighter)(const double **ptr, const double *data, const double *rank, const int index, const int len))
+{
   int i;
   int run;
   int step;
   const double **ptr=malloc(sizeof(double*)*len);
   
-  for(i=0;i<len;i++)
+  for (i=0;i<len;i++)
     ptr[i]=data+i;
     
   qsort(ptr,len,sizeof(*ptr),cmp_data);
-    
-  for(i=0;i<len;i++)
+  
+  for (i=0;i<len;i++)
     rank[RANK_INDEX(i)]=i+1;
-    
-  for(i=0;i<len;i++){
+  
+  for (i=0;i<len;i++)
+  {
     step=run=runlength(ptr+i,len-i);
-    if(run>1){
+    if (run>1)
+    {
       rank[RANK_INDEX(i)]=tiefighter(ptr,data,rank,i,run);
-      while(run>1){
+      while(run>1)
+      {
         run--;
         rank[RANK_INDEX(i+run)]=rank[RANK_INDEX(i)];
       }
+      
       i+=step-1;
     }
   }
@@ -137,5 +154,29 @@ void genrank(const double *data, double *rank, const int len, int method)
     default: 
       rank1(data, rank, len);
   }
+}
+
+
+
+// in-place-ish
+void colrank(const int method, const int m, const int n, double *x)
+{
+  int i, j;
+  double *tmp;
+  
+  tmp = malloc(m * sizeof(*tmp));
+  
+  for (j=0; j<n; j++)
+  {
+    for (i=0; i<m; i++)
+      tmp[i] = x[i + m*j];
+    
+    genrank(x+(m*j), tmp, m, method);
+    
+    for (i=0; i<m; i++)
+      x[i + m*j] = tmp[i];
+  }
+  
+  free(tmp);
 }
 
