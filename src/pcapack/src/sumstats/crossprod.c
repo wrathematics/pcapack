@@ -4,16 +4,17 @@
 
 // Copyright 2015, Schmidt
 
+#include <stdlib.h>
+#include "sumstats.h"
+
 #define MIN(m,n) m<n?m:n;
 
 
 // make symmetric via copying from one triangle to the other.
-#define UPPER 1
-#define LOWER 2
-int pcapcak_symmetrize(const int triang, const int m, const int n, double *x)
+int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
 {
   int i, j;
-  const int k = MIN(m, n); // TODO FIXME
+  const int k = MIN(m, n);
   
   if (m == 0 || n == 0) return 0;
   if (triang != UPPER && triang != LOWER) return -1;
@@ -21,18 +22,18 @@ int pcapcak_symmetrize(const int triang, const int m, const int n, double *x)
   // Copy upper ONTO lower
   if (triang == UPPER)
   {
-    for (j=0; j<n; j++)
+    for (j=0; j<k; j++)
     {
-      for (i=j+1; i<m; i++)
+      for (i=0; i<j; i++)
         x[j + m*i] = x[i + m*j];
     }
   }
   // Copy lower ONTO upper
   else if (triang == LOWER)
   {
-    for (j=0; j<n; j++)
+    for (j=0; j<k; j++)
     {
-      for (i=0; i<j-1; i++)
+      for (i=j+1; i<k; i++)
         x[j + m*i] = x[i + m*j];
     }
   }
@@ -43,7 +44,27 @@ int pcapcak_symmetrize(const int triang, const int m, const int n, double *x)
 
 
 // t(x) * x
-int pcakack_crossprod(int m, int n, double *x, double alpha, double *c)
+int pcapack_crossprod(int m, int n, double *x, double alpha, double *c)
+{
+  int info = 0;
+  int ldx, ldc;
+  char nst;
+  char triang = 'u';
+  double zero = 0.;
+  
+  nst = 't';
+  ldx = m;
+  ldc = n;
+  
+  dsyrk_(&triang, &nst, &ldc, &ldx, &alpha, x, &m, &zero, c, &ldc);
+  info = pcapack_symmetrize(UPPER, n, n, c);
+  
+  return info;
+}
+
+
+// x * t(x)
+int pcapack_tcrossprod(int m, int n, double *x, double alpha, double *c)
 {
   int info = 0;
   int ldx, ldc;
@@ -56,26 +77,7 @@ int pcakack_crossprod(int m, int n, double *x, double alpha, double *c)
   ldc = m;
   
   dsyrk_(&triang, &nst, &ldc, &ldx, &alpha, x, &m, &zero, c, &ldc);
-  info = pcapcak_symmetrize(triang, m, n, x);
-  
-  return info;
-}
-
-// x * t(x)
-int pcapack_tcrossprod(int m, int n, double *x, double alpha, double *c)
-{
-  int info = 0;
-  int ldx, ldc;
-  char nst;
-  char triang = 'u';
-  double zero = 0.;
-  
-  nst = 't'
-  ldx = m
-  ldc = n
-  
-  dsyrk_(&triang, &nst, &ldc, &ldx, &alpha, x, &m, &zero, c, &ldc);
-  info = pcapcak_symmetrize(triang, m, n, x);
+  info = pcapack_symmetrize(UPPER, m, m, c);
   
   return info;
 }
@@ -113,3 +115,4 @@ int pcapack_inverse(int n, double *x)
   
   return info;
 }
+
