@@ -43,7 +43,6 @@ int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, dou
     dgemm_(&trans, &trans, &m, &minmn, &n, &(double){1.0}, x_cp, &m, rotation, &n, &(double){0.0}, x, &m);
   
   tmp = 1. / MAX(1., sqrt((double) m-1));
-  printf("%f\n", tmp);
   dscal_(&minmn, &tmp, sdev, &(int){1});
   
   cleanup:

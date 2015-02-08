@@ -5,7 +5,7 @@
 #include "misc.h"
 
 
-int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, const double *x, double *s, double *u, double *vt)
+int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *x, double *s, double *u, double *vt)
 {
   char jobz;
   int i;
