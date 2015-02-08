@@ -35,10 +35,10 @@ link_directories(./pcapack/build/)
 
 ### Source files
 set(RLIB_FILES
-#	fastmap.c
 #	pca.c
 	svd.c
 	utils.c
+	cov.c
 )
 
 

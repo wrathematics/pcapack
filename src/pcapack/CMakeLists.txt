@@ -1,16 +1,10 @@
 cmake_minimum_required(VERSION 2.6)
 project(pcapack)
-enable_language(C Fortran)
+enable_language(C)
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
-set(CMAKE_Fortran_MODULE_DIRECTORY "include/")
-
-### Flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wfatal-errors -O3 -fPIC")
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wfatal-errors -O3 -fPIC")
-
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wfatal-errors -O3 -fPIC -march=native")
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
@@ -23,19 +17,8 @@ find_package(BLAS REQUIRED)
 
 find_package(OpenMP)
 
-
 if (OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  
-  # OpenMP flags for Fortran --- thanks internet man who I stole this from!
-  # http://sethmmorton.github.io/How%20To/2013/04/28/using-cmake-to-find-openmp-flags-for-fortran-compilers/
-  find_package(OpenMP_Fortran)
-  set_target_properties(${EXECUTABLE_NAME} PROPERTIES
-                      COMPILE_FLAGS "${OpenMP_Fortran_FLAGS}"
-                      LINK_FLAGS "${OpenMP_Fortran_FLAGS}")
-  
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
-  
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
@@ -49,30 +32,21 @@ set(RAND
 )
 
 set(SUMSTATS
-	src/sumstats/covariance_utils.f90
-	src/sumstats/covariance.f90
-	src/sumstats/means.f90
-	src/sumstats/sweeps.f90
-	src/sumstats/variances.f90
+	src/sumstats/covariance.c
+	src/sumstats/crossprod.c
+	src/sumstats/means.c
+	src/sumstats/sweeps.c
+	src/sumstats/variances.c
 )
 
 set(UTILS
-	src/utils/cbool.f90
-	src/utils/distances.f90
-	src/utils/float_equals.f90
-	src/utils/lapack.f90
-	src/utils/rank.f90
-	src/utils/rank_.c
-	src/utils/sgns.f90
-	src/utils/stolen_blas.f
-	src/utils/transposition.f90
+	src/utils/dnrm2.c
+	src/utils/rank.c
+	src/utils/matprinter.c # TODO remove me
 )
 
 SET(PCA
 	src/svd.c
-#	src/pca_mod.f90
-#	src/svd_mod.f90
-#	src/fastmap_mod.f90
 )
 
 
