@@ -44,6 +44,8 @@ int pcapack_rowvars(const int m, const int n, double *x, double *rowvars)
   
 }
 
+
+
 int pcapack_colvars(const int m, const int n, double *x, double *colvars)
 {
   int i, j;
@@ -67,11 +69,4 @@ int pcapack_colsdev(const int m, const int n, double *x, double *colsdev)
   
   return 0;
 }
-
-
-
-
-
-
-
 

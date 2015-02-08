@@ -14,13 +14,11 @@
 #include "sumstats/sumstats.h"
 
 
-// fastmap_mod.f90
-void cma_(int *n, int *p, double *x, int *k, int *info);
+// pca.c
+int pcapack_prcomp_svd(int m, int n, double *x, double *sdev, double *rotation, bool retrot, bool centerx, bool scalex);
 
-// pca_mod.f90
-void prcomp_svd_(int *m, int *n, double *x, double *sdev, 
-  double *rotation, bool *retrot, bool *centerx, bool *scalex, 
-  int *info);
+// svd.c
+int pcapack_svd(const int nu, const int nv, int m, int n, const double *x, double *s, double *u, double *vt);
 
 
 #endif

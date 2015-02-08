@@ -22,6 +22,8 @@ int pcapack_rowsums(const int m, const int n, double *x, double *rowsums)
   return 0;
 }
 
+
+
 int pcapack_colsums(const int m, const int n, double *x, double *colsums)
 {
   int i, j;
@@ -39,6 +41,8 @@ int pcapack_colsums(const int m, const int n, double *x, double *colsums)
   return 0;
 }
 
+
+
 double pcapack_mean(const int n, double *x)
 {
   int i;
@@ -50,6 +54,8 @@ double pcapack_mean(const int n, double *x)
   
   return mean;
 }
+
+
 
 int pcapack_rowmeans(const int m, const int n, double *x, double *rowsums)
 {
@@ -68,6 +74,8 @@ int pcapack_rowmeans(const int m, const int n, double *x, double *rowsums)
   
   return 0;
 }
+
+
 
 int pcapack_colmeans(const int m, const int n, double *x, double *colsums)
 {

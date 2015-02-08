@@ -3,7 +3,18 @@
 
 #include <stdbool.h>
 
-// crossprod.h
+
+// covariance.c
+#define COR_PEARSON   1
+#define COR_SPEARMAN  2
+#define COR_KENDALL   3
+
+int pcapack_cov(const int method, int m, int n, double *x, double *cov);
+int pcapack_cor(const int method, int m, int n, double *x, double *cor);
+
+
+
+// crossprod.c
 #define UPPER 1
 #define LOWER 2
 
@@ -14,13 +25,12 @@ int pcapack_inverse(int n, double *x);
 
 
 
-// covariance.c
-#define COR_PEARSON   1
-#define COR_SPEARMAN  2
-#define COR_KENDALL   3
-
-int pcapack_cov(const int method, int m, int n, double *x, double *cov);
-int pcapack_cor(const int method, int m, int n, double *x, double *cor);
+// means.c
+int pcapack_rowsums(const int m, const int n, double *x, double *rowsums);
+int pcapack_colsums(const int m, const int n, double *x, double *colsums);
+double pcapack_mean(const int n, double *x);
+int pcapack_rowmeans(const int m, const int n, double *x, double *rowsums);
+int pcapack_colmeans(const int m, const int n, double *x, double *colsums);
 
 
 
@@ -35,6 +45,15 @@ int pcapack_cor(const int method, int m, int n, double *x, double *cor);
 
 int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, int margin, int fun);
 int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x);
+
+
+
+// variances.c
+double pcapack_variance(const int n, double *x);
+double pcapack_sdev(const int n, double *x);
+int pcapack_rowvars(const int m, const int n, double *x, double *rowvars);
+int pcapack_colvars(const int m, const int n, double *x, double *colvars);
+int pcapack_colsdev(const int m, const int n, double *x, double *colsdev);
 
 
 #endif
