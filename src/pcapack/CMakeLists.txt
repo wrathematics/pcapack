@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project(pcapack)
 enable_language(C)
 
@@ -15,7 +15,7 @@ find_package(BLAS REQUIRED)
 #find_package(Check)
 #find_package(Cobra)
 
-find_package(OpenMP)
+find_package(OpenMP REQUIRED)
 
 if (OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")

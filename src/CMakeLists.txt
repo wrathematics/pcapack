@@ -39,6 +39,7 @@ set(RLIB_FILES
 	svd.c
 	utils.c
 	cov.c
+	scale.c
 )
 
 
