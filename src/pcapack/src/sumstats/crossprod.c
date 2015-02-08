@@ -9,6 +9,9 @@
 
 #define MIN(m,n) m<n?m:n;
 
+#define likely(x)   __builtin_expect((x),1)
+#define unlikely(x) __builtin_expect((x),0)
+
 
 // make symmetric via copying from one triangle to the other.
 int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
@@ -20,20 +23,37 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
   if (triang != UPPER && triang != LOWER) return -1;
   
   // Copy upper ONTO lower
-  if (triang == UPPER)
+  if (likely(triang == UPPER))
   {
     for (j=0; j<k; j++)
     {
-      for (i=0; i<j; i++)
+      for (i=0; i<j/4*4; i+=4)
+      {
+        x[j + m*i] = x[i + m*j];
+        x[j + m*(i+1)] = x[i+1 + m*j];
+        x[j + m*(i+2)] = x[i+2 + m*j];
+        x[j + m*(i+3)] = x[i+3 + m*j];
+      }
+      
+      for (i=j/4*4; i<j; i++)
         x[j + m*i] = x[i + m*j];
     }
   }
   // Copy lower ONTO upper
-  else if (triang == LOWER)
+  else if (unlikely(triang == LOWER))
   {
+    // NOTE:  Due to all the inherent cache misses, this should stay serial
     for (j=0; j<k; j++)
     {
-      for (i=j+1; i<k; i++)
+      for (i=j+1; i<k/4*4; i+=4)
+      {
+        x[j + m*i] = x[i + m*j];
+        x[j + m*(i+1)] = x[i+1 + m*j];
+        x[j + m*(i+2)] = x[i+2 + m*j];
+        x[j + m*(i+3)] = x[i+3 + m*j];
+      }
+      
+      for (i=k/4*4; i<k; i++)
         x[j + m*i] = x[i + m*j];
     }
   }
@@ -47,16 +67,8 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
 int pcapack_crossprod(int m, int n, double *x, double alpha, double *c)
 {
   int info = 0;
-  int ldx, ldc;
-  char nst;
-  char triang = 'u';
-  double zero = 0.;
   
-  nst = 't';
-  ldx = m;
-  ldc = n;
-  
-  dsyrk_(&triang, &nst, &ldc, &ldx, &alpha, x, &m, &zero, c, &ldc);
+  dsyrk_(&(char){'u'}, &(char){'t'}, &n, &m, &alpha, x, &m, &(double){0.0}, c, &n);
   info = pcapack_symmetrize(UPPER, n, n, c);
   
   return info;
@@ -67,16 +79,8 @@ int pcapack_crossprod(int m, int n, double *x, double alpha, double *c)
 int pcapack_tcrossprod(int m, int n, double *x, double alpha, double *c)
 {
   int info = 0;
-  int ldx, ldc;
-  char nst;
-  char triang = 'u';
-  double zero = 0.;
   
-  nst = 'n';
-  ldx = n;
-  ldc = m;
-  
-  dsyrk_(&triang, &nst, &ldc, &ldx, &alpha, x, &m, &zero, c, &ldc);
+  dsyrk_(&(char){'u'}, &(char){'n'}, &m, &n, &alpha, x, &m, &(double){0.0}, c, &m);
   info = pcapack_symmetrize(UPPER, m, m, c);
   
   return info;
