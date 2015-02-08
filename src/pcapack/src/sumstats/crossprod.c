@@ -6,11 +6,7 @@
 
 #include <stdlib.h>
 #include "sumstats.h"
-
-#define MIN(m,n) m<n?m:n;
-
-#define likely(x)   __builtin_expect((x),1)
-#define unlikely(x) __builtin_expect((x),0)
+#include "../misc.h"
 
 
 // make symmetric via copying from one triangle to the other.
