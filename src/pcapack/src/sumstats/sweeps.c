@@ -157,13 +157,22 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       for (i=0; i<m; i++)
       {
         dt = x[i + m*j] - colmean;
-        colmean += dt/((double) i);
+        colmean += dt/((double) i+1);
         colvar += dt * (x[i + m*j] - colmean);
       }
       
       colvar = sqrt(colvar / ((double) m-1));
       
-      for (i=0; i<m; i++)
+      // Remove mean and variance
+      for (i=0; i<m/4*4; i+=4)
+      {
+        x[i   + m*j] = (x[i   + m*j]- colmean) / colvar;
+        x[i+1 + m*j] = (x[i+1 + m*j]- colmean) / colvar;
+        x[i+2 + m*j] = (x[i+2 + m*j]- colmean) / colvar;
+        x[i+3 + m*j] = (x[i+3 + m*j]- colmean) / colvar;
+      }
+      
+      for (i=m/4*4; i<m; i++)
         x[i + m*j] = (x[i + m*j]- colmean) / colvar;
     }
   }
