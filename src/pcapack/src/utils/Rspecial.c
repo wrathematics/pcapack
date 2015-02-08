@@ -38,4 +38,3 @@ bool pcapack_anyna(const int n, const double *x)
   return false;
 }
 
-
