@@ -4,66 +4,66 @@
 
 // Copyright 2015, Schmidt
 
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
+#include "sumstats/sumstats.h"
+#include "utils/utils.h"
+#include "misc.h"
 
-#define MIN(x,y) x<y?x:y
-#define MAX(x,y) x<y?y:x
 
-// TODO: xpose, center_scale, center, scale
-
-int pcapack_prcomp_svd(int m, int n, double *x, double *sdev, double *rotation, bool retrot, bool centerx, bool scalex)
+int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, double *x, double *sdev, double *rotation)
 {
   char trans = 'n';
   int info;
   int minmn = MIN(m, n);
-  int intone = 1;
   double *x_cp;
   double *u;
-  double one = 1., zero = 0.;
   double tmp;
   
   
-  x_cp = malloc(m*n * sizeof(*x));
-  memcpy(x_cp, x, m*n*sizeof(*x));
-  
+  if (centerx || scalex || retrot)
+  {
+    x_cp = malloc(m*n * sizeof(*x));
+    memcpy(x_cp, x, m*n*sizeof(*x));
+  }
+  else
+    x_cp = x;
   u = malloc(m*minmn * sizeof(*x));
   
-  if (centerx && scalex)
-    center_scale(m, n, x_cp);
-  else if (centerx)
-    center(m, n, x_cp);
-  else if (scalex)
-    scale(m, n, x_cp);
   
-  info = pcapack_svd(n, n, m, n, x_cp, sdev, u, rotation)
+  pcapack_scale(centerx, scalex, m, n, x_cp);
   
-  // TODO check info
+  info = pcapack_svd(false, n, n, m, n, x_cp, sdev, u, rotation);
+  if (info != 0) goto cleanup;
   
-  xpose(minmn, n, rotation);
+  pcapack_xpose(minmn, n, rotation);
   
   if (retrot)
-    dgemm_(&trans, &trans, &m, &minmn, &n, &one, x, &m, rotation, &n, &zero, x, &m);
+    dgemm_(&trans, &trans, &m, &minmn, &n, &(double){1.0}, x_cp, &m, rotation, &n, &(double){0.0}, x, &m);
   
   tmp = 1. / MAX(1., sqrt((double) m-1));
-  dscal_(&minmn, &tmp, sdev, &intone);
+  printf("%f\n", tmp);
+  dscal_(&minmn, &tmp, sdev, &(int){1});
   
-  free(x_cp);
-  free(u);
+  cleanup:
+    if (centerx || scalex || retrot) free(x_cp);
+    free(u);
   
   return info;
 }
-    ! normalize singular values
-    tmp = 1.0d0 / max(1.0d0, dsqrt(dble(m-1)))
-    call dscal(minmn, tmp, sdev, 1)
-    
-    
-    if (allocated(u)) deallocate(u)
-    if (allocated(cpx)) deallocate(cpx)
-    
-    return
-  end subroutine
-  
-  
+/*    ! normalize singular values*/
+/*    tmp = 1.0d0 / max(1.0d0, dsqrt(dble(m-1)))*/
+/*    call dscal(minmn, tmp, sdev, 1)*/
+/*    */
+/*    */
+/*    if (allocated(u)) deallocate(u)*/
+/*    if (allocated(cpx)) deallocate(cpx)*/
+/*    */
+/*    return*/
+/*  end subroutine*/
+/*  */
+/*  */
 
 
 /*
