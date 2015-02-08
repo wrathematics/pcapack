@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "pcapack.h"
+#include "misc.h"
 
 
-int pcapack_svd(const int nu, const int nv, int m, int n, const double *x, double *s, double *u, double *vt)
+int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, const double *x, double *s, double *u, double *vt)
 {
   char jobz;
   int i;
@@ -22,8 +24,13 @@ int pcapack_svd(const int nu, const int nv, int m, int n, const double *x, doubl
     jobz = 'a';
   
   
-  x_cp = malloc(m*n * sizeof(*x_cp));
-  memcpy(x_cp, x, m*n*sizeof(*x_cp));
+  if (likely(inplace))
+    x_cp = x;
+  else
+  {
+    x_cp = malloc(m*n * sizeof(*x_cp));
+    memcpy(x_cp, x, m*n*sizeof(*x_cp));
+  }
   
   iwork = malloc(8*minmn * sizeof(*iwork));
   
@@ -33,7 +40,7 @@ int pcapack_svd(const int nu, const int nv, int m, int n, const double *x, doubl
   work = malloc(lwork * sizeof(*work));
   dgesdd_(&jobz, &m, &n, x_cp, &m, s, u, &m, vt, &minmn, work, &lwork, iwork, &info);
   
-  free(x_cp);
+  if (likely(!inplace)) free(x_cp);
   free(work);
   free(iwork);
   
