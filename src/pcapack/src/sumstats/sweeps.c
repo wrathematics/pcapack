@@ -167,11 +167,12 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
   }
   else if (centerx)
   {
+    div = 1. / ((double) m);
     for (j=0; j<n; j++)
     {
       colmean = 0;
       for (i=0; i<m; i++)
-        colmean += x[i + m*j] / ((double) m);
+        colmean += x[i + m*j] * div;
       
       for (i=0; i<m; i++)
         x[i + m*j] -= colmean;

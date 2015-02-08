@@ -1,4 +1,4 @@
-useDynLib(pcapack)
+useDynLib(pcapack, R_cov)
 
 exportPattern("^[[:alpha:]]+")
 
