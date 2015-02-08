@@ -9,6 +9,8 @@
 #include <math.h>
 #include "sumstats.h"
 
+#define OMP_MIN_SIZE 2500
+
 // sweep array out of matrix
 // code is a bit of a monstrosity, but not sure how to simplify it without hurting performance...
 
@@ -140,7 +142,7 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
 {
   int i, j;
   double colmean, colvar;
-  double dt, tmp, div;
+  double dt, tmp;
   
   if (m == 0 || n == 0) return 0;
   
@@ -167,20 +169,41 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
   }
   else if (centerx)
   {
-    div = 1. / ((double) m);
+    const double div = 1. / ((double) m);
+    
+    #pragma omp parallel for private(i, j, colmean) shared(x) if(m*n > OMP_MIN_SIZE)
     for (j=0; j<n; j++)
     {
       colmean = 0;
-      for (i=0; i<m; i++)
+      
+      // Get column mean
+      for (i=0; i<m/4*4; i+=4)
+      {
+        colmean += x[i   + m*j] * div;
+        colmean += x[i+1 + m*j] * div;
+        colmean += x[i+2 + m*j] * div;
+        colmean += x[i+3 + m*j] * div;
+      }
+      
+      for (i=m/4*4; i<m; i++)
         colmean += x[i + m*j] * div;
       
-      for (i=0; i<m; i++)
+      // Remove mean from column
+      for (i=0; i<m/4*4; i+=4)
+      {
+        x[i   + m*j] -= colmean;
+        x[i+1 + m*j] -= colmean;
+        x[i+2 + m*j] -= colmean;
+        x[i+3 + m*j] -= colmean;
+      }
+      
+      for (i=m/4*4; i<m; i++)
         x[i + m*j] -= colmean;
     }
   }
   else if (scalex)
   {
-    div = 1./((double) m-1);
+    const double div = 1./((double) m-1);
     for (j=0; j<n; j++)
     {
       colvar = 0;
