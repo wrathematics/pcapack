@@ -35,7 +35,7 @@ link_directories(./pcapack/build/)
 
 ### Source files
 set(RLIB_FILES
-#	pca.c
+	pca.c
 	svd.c
 	utils.c
 	cov.c

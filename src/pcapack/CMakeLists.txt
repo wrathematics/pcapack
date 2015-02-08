@@ -42,11 +42,13 @@ set(SUMSTATS
 set(UTILS
 	src/utils/dnrm2.c
 	src/utils/rank.c
+	src/utils/xpose.c
 	src/utils/matprinter.c # TODO remove me
 )
 
 SET(PCA
 	src/svd.c
+	src/pca.c
 )
 
 
