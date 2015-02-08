@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "sumstats/sumstats.h"
+
 
 // fastmap_mod.f90
 void cma_(int *n, int *p, double *x, int *k, int *info);
