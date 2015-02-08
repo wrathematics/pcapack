@@ -23,6 +23,7 @@ To install the R package, simply execute:
 
 ```
 library(devtools)
+install_github("wrahtematics/RNACI") ### dependency
 install_github("wrathematics/pcapack")
 ```
 
