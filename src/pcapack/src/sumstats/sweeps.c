@@ -201,13 +201,28 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
         x[i + m*j] -= colmean;
     }
   }
-  else if (scalex)
+  else if (scalex) // RMSE
   {
     const double div = 1./((double) m-1);
     for (j=0; j<n; j++)
     {
       colvar = 0;
-      for (i=0; i<m; i++)
+      
+      // Get column variance
+      #pragma omp parallel for private(i, tmp) shared(j, x) if(m > OMP_MIN_SIZE) reduction(+:colvar)
+      for (i=0; i<m/4*4; i+=4)
+      {
+        tmp = x[i + m*j];
+        colvar += tmp*tmp*div;
+        tmp = x[i+1 + m*j];
+        colvar += tmp*tmp*div;
+        tmp = x[i+2 + m*j];
+        colvar += tmp*tmp*div;
+        tmp = x[i+3 + m*j];
+        colvar += tmp*tmp*div;
+      }
+      
+      for (i=m/4*4; i<m; i++)
       {
         tmp = x[i + m*j];
         colvar += tmp*tmp*div;
@@ -215,7 +230,17 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       
       colvar = sqrt(colvar);
       
-      for (i=0; i<n; i++)
+      // Remove variance from column
+      #pragma omp parallel for private(i) shared(j, x, colvar)
+      for (i=0; i<m/4*4; i+=4)
+      {
+        x[i   + m*j] /= colvar;
+        x[i+1 + m*j] /= colvar;
+        x[i+2 + m*j] /= colvar;
+        x[i+3 + m*j] /= colvar;
+      }
+      
+      for (i=m/4*4; i<m; i++)
         x[i + m*j] /= colvar;
     }
   }
