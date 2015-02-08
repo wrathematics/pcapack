@@ -21,7 +21,7 @@ stomach.
 
 To install the R package, simply execute:
 
-```
+```r
 library(devtools)
 install_github("wrahtematics/RNACI") ### dependency
 install_github("wrathematics/pcapack")
