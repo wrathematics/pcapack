@@ -16,6 +16,13 @@
 #define MAX(m,n) m<n?n:m
 
 
+// scale.c
+SEXP R_scale(SEXP centerx, SEXP scalex, SEXP x);
+
+// svd.c
+SEXP R_pcapack_svd(SEXP NU, SEXP NV, SEXP M, SEXP N, SEXP X);
+
+// utils.c
 SEXP make_pca_default_colnames(const int n);
 
 
