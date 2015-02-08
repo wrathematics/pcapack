@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2014, Schmidt
+// Copyright 2015, Schmidt
 
 #ifndef PCAPACK_H
 #define PCAPACK_H
@@ -15,10 +15,10 @@
 
 
 // pca.c
-int pcapack_prcomp_svd(int m, int n, double *x, double *sdev, double *rotation, bool retrot, bool centerx, bool scalex);
+int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, double *x, double *sdev, double *rotation);
 
 // svd.c
-int pcapack_svd(const int nu, const int nv, int m, int n, const double *x, double *s, double *u, double *vt);
+int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, const double *x, double *s, double *u, double *vt);
 
 
 #endif
