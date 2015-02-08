@@ -4,6 +4,8 @@ set.seed(1234)
 
 m <- 10
 n <- 50
+m <- 50
+n <- 10
 
 x <- matrix(rnorm(m*n), m, n)
 
