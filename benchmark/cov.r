@@ -7,5 +7,5 @@ x <- matrix(rnorm(m*n), m, n)
 
 reps <- 5
 
-benchmark(cov(x), pcapack_cov(x), replications=reps, columns=c("test", "elapsed", "relative"))
-
+benchmark(R=A <- cov(x), Me=B <- pcapack_cov(x), replications=reps, columns=c("test", "elapsed", "relative"))
+all.equal(A, B)
