@@ -23,15 +23,7 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
   {
     for (j=0; j<k; j++)
     {
-      for (i=0; i<j/4*4; i+=4)
-      {
-        x[j + m*i] = x[i + m*j];
-        x[j + m*(i+1)] = x[i+1 + m*j];
-        x[j + m*(i+2)] = x[i+2 + m*j];
-        x[j + m*(i+3)] = x[i+3 + m*j];
-      }
-      
-      for (i=j/4*4; i<j; i++)
+      for (i=0; i<j; i++)
         x[j + m*i] = x[i + m*j];
     }
   }
@@ -41,15 +33,7 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
     // NOTE:  Due to all the inherent cache misses, this should stay serial
     for (j=0; j<k; j++)
     {
-      for (i=j+1; i<k/4*4; i+=4)
-      {
-        x[j + m*i] = x[i + m*j];
-        x[j + m*(i+1)] = x[i+1 + m*j];
-        x[j + m*(i+2)] = x[i+2 + m*j];
-        x[j + m*(i+3)] = x[i+3 + m*j];
-      }
-      
-      for (i=k/4*4; i<k; i++)
+      for (i=j+1; i<k; i++)
         x[j + m*i] = x[i + m*j];
     }
   }

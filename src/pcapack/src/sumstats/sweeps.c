@@ -11,10 +11,8 @@
 
 #define OMP_MIN_SIZE 2500
 
-// sweep array out of matrix
-// code is a bit of a monstrosity, but not sure how to simplify it without hurting performance...
 
-// in-place
+// sweep array out of matrix in-place
 int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, int margin, int fun)
 {
   int i, j;
@@ -31,29 +29,34 @@ int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, in
   {
     if (fun == PLUS)
     {
-      for (i=0; i<m; i++)
+      for (j=0; j<n; j++)
       {
-        tmp = vec[i];
-        for (j=0; j<n; j++)
+        for (i=0; i<m; i++)
           x[i + m*j] += vec[i];
       }
     }
     else if (fun == MINUS)
     {
-      for (i=0; i<m; i++)
+      for (j=0; j<n; j++)
       {
-        tmp = vec[i];
-        for (j=0; j<n; j++)
+        for (i=0; i<m; i++)
           x[i + m*j] -= vec[i];
       }
     }
     else if (fun == TIMES)
     {
-      for (i=0; i<m; i++)
+      for (j=0; j<n; j++)
       {
-        tmp = vec[i];
-        for (j=0; j<n; j++)
+        for (i=0; i<m; i++)
           x[i + m*j] *= vec[i];
+      }
+    }
+    else if (fun == DIVIDE)
+    {
+      for (j=0; j<n; j++)
+      {
+        for (i=0; i<m; i++)
+          x[i + m*j] /= vec[i];
       }
     }
   }
@@ -97,6 +100,7 @@ int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, in
       }
     }
   }
+  
   // General case
   else
   {
@@ -164,16 +168,8 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       colvar = sqrt(colvar / ((double) m-1));
       
       // Remove mean and variance
-      for (i=0; i<m/4*4; i+=4)
-      {
-        x[i   + m*j] = (x[i   + m*j]- colmean) / colvar;
-        x[i+1 + m*j] = (x[i+1 + m*j]- colmean) / colvar;
-        x[i+2 + m*j] = (x[i+2 + m*j]- colmean) / colvar;
-        x[i+3 + m*j] = (x[i+3 + m*j]- colmean) / colvar;
-      }
-      
-      for (i=m/4*4; i<m; i++)
-        x[i + m*j] = (x[i + m*j]- colmean) / colvar;
+      for (i=0; i<m; i++)
+        x[i + m*j] = (x[i   + m*j]- colmean) / colvar;
     }
   }
   else if (centerx)
@@ -186,28 +182,13 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       colmean = 0;
       
       // Get column mean
-      for (i=0; i<m/4*4; i+=4)
-      {
+      for (i=0; i<m; i++)
         colmean += x[i   + m*j] * div;
-        colmean += x[i+1 + m*j] * div;
-        colmean += x[i+2 + m*j] * div;
-        colmean += x[i+3 + m*j] * div;
-      }
-      
-      for (i=m/4*4; i<m; i++)
-        colmean += x[i + m*j] * div;
       
       // Remove mean from column
-      for (i=0; i<m/4*4; i+=4)
-      {
+      for (i=0; i<m; i++)
         x[i   + m*j] -= colmean;
-        x[i+1 + m*j] -= colmean;
-        x[i+2 + m*j] -= colmean;
-        x[i+3 + m*j] -= colmean;
-      }
       
-      for (i=m/4*4; i<m; i++)
-        x[i + m*j] -= colmean;
     }
   }
   else if (scalex) // RMSE
@@ -219,19 +200,7 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       
       // Get column variance
       #pragma omp parallel for private(i, tmp) shared(j, x) if(m > OMP_MIN_SIZE) reduction(+:colvar)
-      for (i=0; i<m/4*4; i+=4)
-      {
-        tmp = x[i + m*j];
-        colvar += tmp*tmp*div;
-        tmp = x[i+1 + m*j];
-        colvar += tmp*tmp*div;
-        tmp = x[i+2 + m*j];
-        colvar += tmp*tmp*div;
-        tmp = x[i+3 + m*j];
-        colvar += tmp*tmp*div;
-      }
-      
-      for (i=m/4*4; i<m; i++)
+      for (i=0; i<m; i++)
       {
         tmp = x[i + m*j];
         colvar += tmp*tmp*div;
@@ -241,15 +210,7 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       
       // Remove variance from column
       #pragma omp parallel for private(i) shared(j, x, colvar)
-      for (i=0; i<m/4*4; i+=4)
-      {
-        x[i   + m*j] /= colvar;
-        x[i+1 + m*j] /= colvar;
-        x[i+2 + m*j] /= colvar;
-        x[i+3 + m*j] /= colvar;
-      }
-      
-      for (i=m/4*4; i<m; i++)
+      for (i=0; i<m; i++)
         x[i + m*j] /= colvar;
     }
   }
