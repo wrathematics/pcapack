@@ -17,15 +17,12 @@ bool pcapack_is_symmetric(const int m, const int n, double *x)
   if (m == 0 || n == 0) return 0;
   
   // NOTE keep this serial (cache misses)
-  if (likely(triang == UPPER))
+  for (j=0; j<k; j++)
   {
-    for (j=0; j<k; j++)
+    for (i=0; i<j; i++)
     {
-      for (i=0; i<j; i++)
-      {
-        if (x[j + m*i] != x[i + m*j])
-          return false;
-      }
+      if (x[j + m*i] != x[i + m*j])
+        return false;
     }
   }
   

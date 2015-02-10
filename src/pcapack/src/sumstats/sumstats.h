@@ -18,6 +18,7 @@ int pcapack_cor(const int method, int m, int n, double *x, double *cor);
 #define UPPER 1
 #define LOWER 2
 
+bool pcapack_is_symmetric(const int m, const int n, double *x);
 int pcapack_symmetrize(const int triang, const int m, const int n, double *x);
 int pcapack_crossprod(int m, int n, double *x, double alpha, double *c);
 int pcapack_tcrossprod(int m, int n, double *x, double alpha, double *c);
