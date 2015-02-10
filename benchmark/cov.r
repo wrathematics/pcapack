@@ -1,7 +1,7 @@
 library(pcapack)
 library(rbenchmark)
 
-m <- 1e5
+m <- 1e4
 n <- 250
 x <- matrix(rnorm(m*n), m, n)
 
