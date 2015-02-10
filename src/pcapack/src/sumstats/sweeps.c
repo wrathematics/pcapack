@@ -8,8 +8,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "sumstats.h"
-
-#define OMP_MIN_SIZE 2500
+#include "../omp.h"
 
 
 // sweep array out of matrix in-place
@@ -153,6 +152,7 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
   // Doing both at once, if needed, is more performant
   if (centerx && scalex)
   {
+    #pragma omp parallel for private(i, j, colmean, colvar, dt) shared(x) if(m*n > OMP_MIN_SIZE)
     for (j=0; j<n; j++)
     {
       colmean = 0;
@@ -194,12 +194,13 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
   else if (scalex) // RMSE
   {
     const double div = 1./((double) m-1);
+    
+    #pragma omp parallel for private(i, j, colvar, tmp) shared(x) if (m*n > OMP_MIN_SIZE)
     for (j=0; j<n; j++)
     {
       colvar = 0;
       
       // Get column variance
-      #pragma omp parallel for private(i, tmp) shared(j, x) if(m > OMP_MIN_SIZE) reduction(+:colvar)
       for (i=0; i<m; i++)
       {
         tmp = x[i + m*j];
@@ -209,7 +210,6 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       colvar = sqrt(colvar);
       
       // Remove variance from column
-      #pragma omp parallel for private(i) shared(j, x, colvar)
       for (i=0; i<m; i++)
         x[i + m*j] /= colvar;
     }
