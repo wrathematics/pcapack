@@ -18,6 +18,8 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
   if (m == 0 || n == 0) return 0;
   if (triang != UPPER && triang != LOWER) return -1;
   
+  // NOTE keep these serial, as all the cache misses inherent to these make the performance tank
+  
   // Copy upper ONTO lower
   if (likely(triang == UPPER))
   {
@@ -30,7 +32,6 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
   // Copy lower ONTO upper
   else if (unlikely(triang == LOWER))
   {
-    // NOTE:  Due to all the inherent cache misses, this should stay serial
     for (j=0; j<k; j++)
     {
       for (i=j+1; i<k; i++)
