@@ -10,20 +10,14 @@ n <- 10
 x <- matrix(rnorm(m*n), m, n)
 
 
-test <- function()
-{
-  mdl1 <- prcomp(x)
-  mdl2 <- pca(x, method="svd")
-#  mdl3 <- pca(x, method="svd", retx=FALSE)
-  
-#  all.equal(mdl1, mdl2)
-  print(all.equal(mdl1$sdev, mdl2$sdev))
-  print(all.equal(mdl1$rotation, mdl2$rotation))
-  
-  invisible()
-}
+
+mdl1 <- prcomp(x)
+mdl2 <- pca(x, method="svd")
+print(all.equal(mdl1$sdev, mdl2$sdev))
+print(all.equal(mdl1$rotation, mdl2$rotation))
 
 
-
-test()
-
+mdl1 <- prcomp(x)
+mdl2 <- pca(x, method="eigcov")
+print(all.equal(mdl1$sdev, mdl2$sdev))
+print(all.equal(unclass(mdl1$loadings), mdl2$rotation))
