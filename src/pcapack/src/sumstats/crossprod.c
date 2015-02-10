@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "sumstats.h"
 #include "../misc.h"
+#include "../lapack.h"
 
 
 bool pcapack_is_symmetric(const int m, const int n, double *x)
@@ -91,34 +92,43 @@ int pcapack_tcrossprod(int m, int n, double *x, double alpha, double *c)
 
 
 
-int pcapack_inverse(int n, double *x)
+int pcapack_inverse(bool inplace, int n, double *x)
 {
   int info = 0;
   int *ipiv;
   int lwork;
   double tmp;
-  double *work;
+  double *x_cp, *work;
   
+  
+  if (!inplace)
+  {
+    x_cp = malloc(n*n * sizeof(*x_cp));
+    memcpy(x_cp, x, n*n*sizeof(double));
+  }
+  else
+    x_cp = x;
   
   // Factor x = LU
   ipiv = malloc(n * sizeof(*ipiv));
-  dgetrf_(&n, &n, x, &n, ipiv, &info);
+  dgetrf_(&n, &n, x_cp, &n, ipiv, &info);
   if (info != 0) goto cleanup;
   
   
   // Invert
   lwork = -1;
-  dgetri_(&n, x, &n, ipiv, &tmp, &lwork, &info);
+  dgetri_(&n, x_cp, &n, ipiv, &tmp, &lwork, &info);
   if (info != 0) goto cleanup;
   
   lwork = (int) tmp;
   work = malloc(lwork * sizeof(*work));
-  dgetri_(&n, x, &n, ipiv, work);
+  dgetri_(&n, x_cp, &n, ipiv, work, &lwork, &info);
   
   
   free(work);
   cleanup:
   free(ipiv);
+  if (!inplace) free(x_cp);
   
   return info;
 }

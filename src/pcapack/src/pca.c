@@ -10,6 +10,7 @@
 #include "sumstats/sumstats.h"
 #include "utils/utils.h"
 #include "misc.h"
+#include "lapack.h"
 
 
 int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, double *x, double *sdev, double *rotation)
@@ -63,7 +64,7 @@ int pcapack_prcomp_eig(bool retrot, int m, int n, double *x, double *sdev, doubl
   double *cov;
   double *x_cp;
   // Fortran...
-  double worksize, iworksize;
+  double worksize;
   int lwork, liwork;
   int *iwork;
   double *work;
@@ -88,12 +89,11 @@ int pcapack_prcomp_eig(bool retrot, int m, int n, double *x, double *sdev, doubl
   dscal_(&(int){n*n}, &tmp, cov, &(int){1});
   
   // Take eigen decomposition
-  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, &worksize, &negone, &iworksize, &negone, &info);
+  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, &worksize, &negone, &liwork, &negone, &info);
   lwork = (int) worksize;
-  liwork = (int) iworksize;
   work = malloc(lwork * sizeof(*work));
   iwork = malloc(liwork * sizeof(*iwork));
-  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, &worksize, &negone, &iworksize, &negone, &info);
+  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, work, &lwork, &iwork, &liwork, &info);
   
   // sdev = rev(sqrt(sdev))
   for (i=0; i<n/2; i++)

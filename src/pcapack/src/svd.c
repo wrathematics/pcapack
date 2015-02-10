@@ -53,17 +53,17 @@ int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *
 // m == n
 int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *x, double *values, double *vectors)
 {
-  int info;
+  int info = 0;
   double *x_cp;
   // Passed to Fortran
-  double worksize, iworksize;
+  double worksize;
   int lwork, liwork;
   int *iwork;
   double *work;
   static int neg1 = -1;
   
   
-  if (inplace)
+  if (!inplace)
   {
     x_cp = malloc(n*n * sizeof(*x_cp));
     memcpy(x_cp, x, n*n*sizeof(double));
@@ -80,10 +80,9 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *x
     if (only_values) jobz = 'n';
     else             jobz = 'v';
     
-    dsyevd_(&jobz, &uplo, &n, x_cp, &n, values, &worksize, &neg1, &iworksize, &neg1, &info);
+    dsyevd_(&jobz, &uplo, &n, x_cp, &n, values, &worksize, &neg1, &liwork, &neg1, &info);
     
     lwork = (int) worksize;
-    liwork = (int) iworksize;
     work = malloc(lwork * sizeof(*work));
     iwork = malloc(liwork * sizeof(*iwork));
     
@@ -108,7 +107,7 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *x
   #endif
   
   cleanup:
-    if (inplace) free(x_cp);
+    if (!inplace) free(x_cp);
   
   return info;
 }

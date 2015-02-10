@@ -1,6 +1,7 @@
 // Translation of dnrm2
 
 #include <math.h>
+#include "../lapack.h"
 
 double dnrm2(int n, double *x, int incx)
 {
