@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "pcapack.h"
 #include "misc.h"
+#include "lapack.h"
 
 
 int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *x, double *s, double *u, double *vt)
@@ -12,7 +13,7 @@ int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *
   int info = 0;
   int lwork, *iwork;
   double tmp, *work, *x_cp;
-  const minmn = m<n ? m : n;
+  int minmn = m<n ? m : n;
   
   if (nu == 0 && nv == 0)
     jobz = 'n';
@@ -47,4 +48,69 @@ int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *
   return info;
 }
 
+
+
+// m == n
+int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *x, double *values, double *vectors)
+{
+  int info;
+  double *x_cp;
+  // Passed to Fortran
+  double worksize, iworksize;
+  int lwork, liwork;
+  int *iwork;
+  double *work;
+  static int neg1 = -1;
+  
+  
+  if (inplace)
+  {
+    x_cp = malloc(n*n * sizeof(*x_cp));
+    memcpy(x_cp, x, n*n*sizeof(double));
+  }
+  else
+    x_cp = x;
+  
+  
+  if (likely(symmetric))
+  {
+    char jobz;
+    char uplo = 'U', trans = 'N';
+    
+    if (only_values) jobz = 'n';
+    else             jobz = 'v';
+    
+    dsyevd_(&jobz, &uplo, &n, x_cp, &n, values, &worksize, &neg1, &iworksize, &neg1, &info);
+    
+    lwork = (int) worksize;
+    liwork = (int) iworksize;
+    work = malloc(lwork * sizeof(*work));
+    iwork = malloc(liwork * sizeof(*iwork));
+    
+    dsyevd_(&jobz, &uplo, &n, x_cp, &n, values, work, &lwork, iwork, &liwork, &info);
+  }
+  #if 0 // TODO
+  else
+  {
+    char jobvl = 'n', jobvr;
+    
+    if (only_values)
+      jobvr = 'v';
+    else
+      jobvr = 'n';
+    
+    
+    dgeev_(jobvl, jobvr, &n, x, &m, wr, wi, vl, ldvl, vr, ldvr, work, lwork, info);
+    
+    
+    dgeev_(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, &neg1, info);
+  }
+  #endif
+  
+  cleanup:
+    if (inplace) free(x_cp);
+  
+  return info;
+}
+/*dsyevd(jobz, uplo, n, a, lda, w, work, lwork, iwork, liwork, info);*/
 
