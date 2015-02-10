@@ -16,6 +16,7 @@
 
 // pca.c
 int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, double *x, double *sdev, double *rotation);
+int pcapack_prcomp_eig(bool retrot, int m, int n, double *x, double *sdev, double *rotation);
 
 // svd.c
 int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *x, double *s, double *u, double *vt);

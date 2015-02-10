@@ -29,6 +29,7 @@ int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, dou
   }
   else
     x_cp = x;
+  
   u = malloc(m*minmn * sizeof(*x));
   
   
@@ -51,72 +52,70 @@ int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, dou
   
   return info;
 }
-/*    ! normalize singular values*/
-/*    tmp = 1.0d0 / max(1.0d0, dsqrt(dble(m-1)))*/
-/*    call dscal(minmn, tmp, sdev, 1)*/
-/*    */
-/*    */
-/*    if (allocated(u)) deallocate(u)*/
-/*    if (allocated(cpx)) deallocate(cpx)*/
-/*    */
-/*    return*/
-/*  end subroutine*/
-/*  */
-/*  */
 
 
-/*
-  subroutine prcomp_eig(m, n, x, sdev, rotation, retrot, info) &
-  bind(C, name='prcomp_eigcov_')
-    ! in/out
-    logical(kind=c_bool), intent(in) :: retrot
-    integer, intent(in) :: m, n
-    integer, intent(out) :: info
-    double precision, intent(inout) :: x(m, n)
-    double precision, intent(out) :: sdev(*), rotation(*)
-    ! local
-    integer :: i
-    integer :: iworksize(1), lwork, liwork
-    double precision :: tmp, worksize(1)
-    double precision, allocatable :: covmat(:,:), work(:), iwork(:)
-    
-    
-    allocate(covmat(n, n))
-    
-    call cov(m, n, x, covmat)
-    
-    tmp = 1.0d0 - 1.0d0/dble(m)
-    call dscal(n*n, tmp, covmat, 1)
-    
-    ! compute eigen
-    call dsyevd('V', 'U', n, covmat, n, sdev, worksize, -1, iworksize, -1, info)
-    lwork = int(worksize(1))
-    liwork = iworksize(1)
-    allocate(work(lwork))
-    allocate(iwork(liwork))
-    call dsyevd('V', 'U', n, covmat, n, sdev, work, lwork, iwork, liwork, info)
-    
-    ! sdev = rev(sqrt(sdev))
-    do i = 1, n/2
-      tmp = sdev(i)
-      sdev(i) = dsqrt(sdev(n-i+1))
-      sdev(n-i+1) = dsqrt(tmp)
-    end do
-    
-    if (1 == int(mod(n, 2))) sdev(n/2+1) = sqrt(sdev(n/2+1))
-    
-    
-    call xpose(n, n, rotation)
-    
-    if (retrot == true) then
-      call dgemm('n', 'n', m, n, n, 1.0d0, x, m, rotation, n, 0.0d0, x, m)
-    end if
-    
-    
-    if (allocated(covmat)) deallocate(covmat)
-    if (allocated(work)) deallocate(work)
-    if (allocated(iwork)) deallocate(iwork)
-    
-    return
-  end subroutine
-*/
+
+int pcapack_prcomp_eig(bool retrot, int m, int n, double *x, double *sdev, double *rotation)
+{
+  int info = 0;
+  int i;
+  double tmp;
+  double *cov;
+  double *x_cp;
+  // Fortran...
+  double worksize, iworksize;
+  int lwork, liwork;
+  int *iwork;
+  double *work;
+  int negone = -1;
+  char jobz = 'V', uplo = 'U', trans = 'N';
+  
+  
+  if (retrot)
+  {
+    x_cp = malloc(m*n * sizeof(*x));
+    memcpy(x_cp, x, m*n*sizeof(*x));
+  }
+  else
+    x_cp = x;
+  
+  cov = malloc(n*n * sizeof(*cov));
+  
+  info = pcapack_cov(COR_PEARSON, m, n, x, cov);
+  if (info != 0) goto cleanup;
+  
+  tmp = 1. - 1./((double) m);
+  dscal_(&(int){n*n}, &tmp, cov, &(int){1});
+  
+  // Take eigen decomposition
+  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, &worksize, &negone, &iworksize, &negone, &info);
+  lwork = (int) worksize;
+  liwork = (int) iworksize;
+  work = malloc(lwork * sizeof(*work));
+  iwork = malloc(liwork * sizeof(*iwork));
+  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, &worksize, &negone, &iworksize, &negone, &info);
+  
+  // sdev = rev(sqrt(sdev))
+  for (i=0; i<n/2; i++)
+  {
+    tmp = sqrt(sdev[i]);
+    sdev[i] = sqrt(sdev[n-i]);
+    sdev[n-i] = tmp;
+  }
+  
+  if (n % 2 == 1) sdev[n/2+1] = sqrt(sdev[n/2+1]);
+  
+  pcapack_xpose(n, n, rotation);
+  
+  if (retrot)
+    dgemm_(&trans, &trans, &m, &n, &n, &(double){1.}, x, &m, rotation, &n, &(double){0.}, x, &m);
+  
+  free(iwork);
+  free(work);
+  cleanup:
+    free(cov);
+    if (retrot) free(x_cp);
+  
+  return info;
+}
+

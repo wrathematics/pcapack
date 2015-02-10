@@ -57,28 +57,33 @@ SEXP R_pca_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
 
 
 
-// TODO
-#if 0
-SEXP R_pca_eigcov(SEXP M, SEXP N, SEXP X, SEXP RETROT)
+SEXP R_pca_eigcov(SEXP X, SEXP RETROT)
 {
   R_INIT;
-  const int m = INT(M), n = INT(N);
-  bool retrot = (bool) INTEGER(RETROT)[0];
+  const int m = nrows(X), n = ncols(X);
+  bool retrot = (bool) INT(RETROT);
+  double *x;
   int info = 0;
   
   const int k = m<n?m:n;
   
-  SEXP RET, RET_NAMES, SDEV, TROT;
+  SEXP RET, RET_NAMES, SDEV, TROT, XRET;
   SEXP pcnames, dimnames;
   
   
   newRvec(SDEV, k, "double");
   newRmat(TROT, k, n, "double");
   
-  prcomp_eigcov_(&m, &n, DBLP(X), DBLP(SDEV), DBLP(TROT), &retrot, &info);
+  if (retrot)
+  {
+    newRmat(XRET, m, n, "double"); // FIXME need to pass in mxn, return mxk
+    memcpy(DBLP(XRET), DBLP(X), m*n*sizeof(double));
+    x = DBLP(XRET);
+  }
+  else
+    x = DBLP(X);
   
-/*  if (info != 0)*/
-/*    error(_("info=%d from Lapack routine '%s'"), info, "dgesdd");*/
+  info = pcapack_prcomp_eig(&retrot, m, n, x, DBLP(SDEV), DBLP(TROT));
   
   pcnames = make_pca_default_colnames(n);
   setDimNames(dimnames, pcnames, TROT);
@@ -88,6 +93,5 @@ SEXP R_pca_eigcov(SEXP M, SEXP N, SEXP X, SEXP RETROT)
   
   R_END;
   return RET;
-} 
-#endif
+}
 
