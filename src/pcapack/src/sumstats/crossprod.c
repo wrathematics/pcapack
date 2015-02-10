@@ -9,6 +9,31 @@
 #include "../misc.h"
 
 
+bool pcapack_is_symmetric(const int m, const int n, double *x)
+{
+  int i, j;
+  const int k = MIN(m, n);
+  
+  if (m == 0 || n == 0) return 0;
+  
+  // NOTE keep this serial (cache misses)
+  if (likely(triang == UPPER))
+  {
+    for (j=0; j<k; j++)
+    {
+      for (i=0; i<j; i++)
+      {
+        if (x[j + m*i] != x[i + m*j])
+          return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
+
+
 // make symmetric via copying from one triangle to the other.
 int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
 {
@@ -18,7 +43,7 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
   if (m == 0 || n == 0) return 0;
   if (triang != UPPER && triang != LOWER) return -1;
   
-  // NOTE keep these serial, as all the cache misses inherent to these make the performance tank
+  // NOTE keep this serial (cache misses)
   
   // Copy upper ONTO lower
   if (likely(triang == UPPER))
