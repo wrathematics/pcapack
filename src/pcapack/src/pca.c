@@ -93,7 +93,7 @@ int pcapack_prcomp_eig(bool retrot, int m, int n, double *x, double *sdev, doubl
   lwork = (int) worksize;
   work = malloc(lwork * sizeof(*work));
   iwork = malloc(liwork * sizeof(*iwork));
-  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, work, &lwork, &iwork, &liwork, &info);
+  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, work, &lwork, iwork, &liwork, &info);
   
   // sdev = rev(sqrt(sdev))
   for (i=0; i<n/2; i++)

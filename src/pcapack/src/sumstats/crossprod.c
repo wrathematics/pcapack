@@ -5,6 +5,7 @@
 // Copyright 2015, Schmidt
 
 #include <stdlib.h>
+#include <string.h>
 #include "sumstats.h"
 #include "../misc.h"
 #include "../lapack.h"
