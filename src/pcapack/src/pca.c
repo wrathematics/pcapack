@@ -7,10 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "sumstats/sumstats.h"
-#include "utils/utils.h"
-#include "misc.h"
+
+#include "pcapack.h"
 #include "lapack.h"
+#include "misc.h"
 
 
 int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, double *x, double *sdev, double *rotation)

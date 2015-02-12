@@ -12,6 +12,7 @@
 #include <stdbool.h>
 
 #include "sumstats/sumstats.h"
+#include "utils/utils.h"
 
 
 // pca.c
