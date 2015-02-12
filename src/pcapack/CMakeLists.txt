@@ -4,8 +4,7 @@ enable_language(C)
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wfatal-errors -O3 -fPIC -march=native")
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wfatal-errors -O3 -fPIC -march=native")
 
 
 ### External dependencies
@@ -43,7 +42,6 @@ set(UTILS
 	src/utils/dnrm2.c
 	src/utils/rank.c
 	src/utils/xpose.c
-	src/utils/matprinter.c # TODO remove me
 )
 
 SET(PCA
@@ -55,9 +53,12 @@ SET(PCA
 set(PCAPACK_FILES ${RAND} ${SUMSTATS} ${UTILS} ${PCA})
 
 
+
 ### Make and install
-add_library(pcapack SHARED ${PCAPACK_FILES})
-add_library(pcapack_static STATIC ${PCAPACK_FILES})
+add_library(pcapack_objs OBJECT ${PCAPACK_FILES})
+
+add_library(pcapack SHARED $<TARGET_OBJECTS:pcapack_objs>)
+add_library(pcapack_static STATIC $<TARGET_OBJECTS:pcapack_objs>)
 
 
 target_link_libraries (pcapack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
@@ -71,8 +72,6 @@ else(NOT WIN32)
 endif(NOT WIN32)
 
 
-#if (CHECK_FOUND OR COBRA_FOUND)
-#	enable_testing()
 
 #	if(CHECK_FOUND)
 #		add_subdirectory(test)
