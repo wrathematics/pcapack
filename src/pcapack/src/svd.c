@@ -75,7 +75,7 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *x
   if (likely(symmetric))
   {
     char jobz;
-    char uplo = 'U', trans = 'N';
+    char uplo = 'u', trans = 'n';
     
     if (only_values) jobz = 'n';
     else             jobz = 'v';
