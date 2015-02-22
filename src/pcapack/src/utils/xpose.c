@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
 
-static inline void swap_ind(int i, int j, double *x)
+static inline void swap_by_ind(int i, int j, double *x)
 {
   double tmp;
   tmp = x[i];
@@ -12,7 +12,7 @@ static inline void swap_ind(int i, int j, double *x)
 
 
 // TODO implement a more efficient version eventually...
-static void xpose_inplace(const int m, const int n, double *x)
+static void xpose_nonsquare(const int m, const int n, double *x)
 {
   int i, j, k, idx;
   
@@ -26,7 +26,7 @@ static void xpose_inplace(const int m, const int n, double *x)
       if (idx >= k) break;
     }
     
-    swap_ind(k, idx, x);
+    swap_by_ind(k, idx, x);
   }
   
   return;
@@ -34,14 +34,19 @@ static void xpose_inplace(const int m, const int n, double *x)
 
 
 
-static void xpose_square(int m, int n, double *x)
+static void xpose_square(int n, double *x)
 {
   int i, j;
+  double tmp;
   
   for (j=0; j<n; j++)
   {
     for (i=0; i<j; i++)
-      swap_ind(i, j, x);
+    {
+      tmp = x[i + n*j];
+      x[i + n*j] = x[j + n*i];
+      x[j + n*i] = tmp;
+    }
   }
   
   return;
@@ -52,9 +57,9 @@ static void xpose_square(int m, int n, double *x)
 void pcapack_xpose(int m, int n, double *x)
 {
   if (m == n)
-    xpose_square(m, n, x);
+    xpose_square(n, x);
   else
-    xpose_inplace(m, n, x);
+    xpose_nonsquare(m, n, x);
   
   return;
 }
