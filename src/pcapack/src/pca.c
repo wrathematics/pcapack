@@ -13,7 +13,7 @@
 #include "misc.h"
 
 
-int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, double *x, double *sdev, double *rotation)
+int pcapack_prcomp_svd(bool centerx, bool scalex, bool rotx, int m, int n, double *x, double *sdev, double *rotation)
 {
   char trans = 'n';
   int info;
@@ -23,7 +23,7 @@ int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, dou
   double tmp;
   
   
-  if (centerx || scalex || retrot)
+  if (centerx || scalex || rotx)
   {
     x_cp = malloc(m*n * sizeof(*x));
     memcpy(x_cp, x, m*n*sizeof(*x));
@@ -41,14 +41,14 @@ int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, dou
   
   pcapack_xpose(minmn, n, rotation);
   
-  if (retrot)
+  if (rotx)
     dgemm_(&trans, &trans, &m, &minmn, &n, &(double){1.0}, x_cp, &m, rotation, &n, &(double){0.0}, x, &m);
   
-  tmp = 1. / MAX(1., sqrt((double) m-1));
+  tmp = 1. / (MAX(1., sqrt((double) m-1)));
   dscal_(&minmn, &tmp, sdev, &(int){1});
   
   cleanup:
-    if (centerx || scalex || retrot) free(x_cp);
+    if (centerx || scalex || rotx) free(x_cp);
     free(u);
   
   return info;
@@ -56,23 +56,34 @@ int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, dou
 
 
 
-int pcapack_prcomp_eig(bool retrot, int m, int n, double *x, double *sdev, double *rotation)
+static inline void sqrt_rev(int n, double *sdev)
+{
+  int i;
+  double tmp;
+  
+  for (i=0; i<n/2; i++)
+  {
+    tmp = sqrt(sdev[i]);
+    sdev[i] = sqrt(sdev[n-i-1]);
+    sdev[n-i-1] = tmp;
+  }
+  
+  if (n % 2 == 1) sdev[n/2] = sqrt(sdev[n/2]);
+  
+  return;
+}
+
+int pcapack_prcomp_eig(bool rotx, int m, int n, double *x, double *sdev, double *rotation)
 {
   int info = 0;
   int i;
   double tmp;
   double *cov;
   double *x_cp;
-  // Fortran...
-  double worksize;
-  int lwork, liwork;
-  int *iwork;
-  double *work;
-  int negone = -1;
-  char jobz = 'V', uplo = 'U', trans = 'N';
+  char trans = 'N';
   
   
-  if (retrot)
+  if (rotx)
   {
     x_cp = malloc(m*n * sizeof(*x));
     memcpy(x_cp, x, m*n*sizeof(*x));
@@ -89,32 +100,19 @@ int pcapack_prcomp_eig(bool retrot, int m, int n, double *x, double *sdev, doubl
   dscal_(&(int){n*n}, &tmp, cov, &(int){1});
   
   // Take eigen decomposition
-  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, &worksize, &negone, &liwork, &negone, &info);
-  lwork = (int) worksize;
-  work = malloc(lwork * sizeof(*work));
-  iwork = malloc(liwork * sizeof(*iwork));
-  dsyevd_(&jobz, &uplo, &n, cov, &n, sdev, work, &lwork, iwork, &liwork, &info);
+  pcapack_eig(true, false, true, n, cov, sdev, rotation);
   
   // sdev = rev(sqrt(sdev))
-  for (i=0; i<n/2; i++)
-  {
-    tmp = sqrt(sdev[i]);
-    sdev[i] = sqrt(sdev[n-i]);
-    sdev[n-i] = tmp;
-  }
-  
-  if (n % 2 == 1) sdev[n/2+1] = sqrt(sdev[n/2+1]);
+  sqrt_rev(n, sdev);
   
   pcapack_xpose(n, n, rotation);
   
-  if (retrot)
+  if (rotx)
     dgemm_(&trans, &trans, &m, &n, &n, &(double){1.}, x, &m, rotation, &n, &(double){0.}, x, &m);
   
-  free(iwork);
-  free(work);
   cleanup:
     free(cov);
-    if (retrot) free(x_cp);
+    if (rotx) free(x_cp);
   
   return info;
 }
