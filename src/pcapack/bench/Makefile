@@ -1,9 +1,15 @@
-CC=clang
+CC=gcc -std=c99
+CFLAGS=-L../build -lpcapack_static -lm -lblas -llapack -lgomp
+
+all: cov xpose
+
+cov:
+	$(CC) -o cov cov.c $(CFLAGS)
 
 xpose:
-	$(CC) -o xpose xpose.c -L../build -lpcapack_static
+	$(CC) -o xpose xpose.c $(CFLAGS)
 
-.PHONY: xpose
+.PHONY: cov xpose
 
 clean:
-	rm -rf xpose *~
+	rm -rf cov xpose *~
