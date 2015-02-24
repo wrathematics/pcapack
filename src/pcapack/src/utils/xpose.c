@@ -1,6 +1,7 @@
 #include <stdbool.h>
 
 
+// TODO implement a more efficient version eventually...
 static inline void swap_by_ind(int i, int j, double *x)
 {
   double tmp;
@@ -9,10 +10,7 @@ static inline void swap_by_ind(int i, int j, double *x)
   x[j] = tmp;
 }
 
-
-
-// TODO implement a more efficient version eventually...
-static void xpose_nonsquare(const int m, const int n, double *x)
+static void xpose_inplace_nonsquare(const int m, const int n, double *x)
 {
   int i, j, k, idx;
   
@@ -34,7 +32,7 @@ static void xpose_nonsquare(const int m, const int n, double *x)
 
 
 
-static void xpose_square(int n, double *x)
+static void xpose_inplace_square(int n, double *x)
 {
   int i, j;
   double tmp;
@@ -57,9 +55,9 @@ static void xpose_square(int n, double *x)
 void pcapack_xpose(int m, int n, double *x)
 {
   if (m == n)
-    xpose_square(n, x);
+    xpose_inplace_square(n, x);
   else
-    xpose_nonsquare(m, n, x);
+    xpose_inplace_nonsquare(m, n, x);
   
   return;
 }
