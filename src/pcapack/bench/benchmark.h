@@ -6,13 +6,13 @@
 #include <time.h>
 
 double __benchmark_seconds;
-clock_t __benchmark_start, __benchmark_diff;
+clock_t __benchmark_start, __benchmark_end;
 
 #define TIMEEXPR(foo) \
   __benchmark_start = clock(); \
   foo; \
-  __benchmark_diff = clock() - __benchmark_start; \
-  __benchmark_seconds = ((double) __benchmark_diff * 1000 / CLOCKS_PER_SEC) / 1000.
+  __benchmark_end = clock(); \
+  __benchmark_seconds = (double)(__benchmark_end - __benchmark_start) / CLOCKS_PER_SEC
 
 #define SYSTIME(foo) \
   TIMEEXPR(foo) \
