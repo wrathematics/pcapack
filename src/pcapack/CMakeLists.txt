@@ -49,8 +49,12 @@ SET(PCA
 	src/pca.c
 )
 
+SET(DEBUG
+	src/utils/debug/matprinter.c
+)
 
-set(PCAPACK_FILES ${RAND} ${SUMSTATS} ${UTILS} ${PCA})
+
+set(PCAPACK_FILES ${RAND} ${SUMSTATS} ${UTILS} ${PCA} ${DEBUG})
 
 
 
