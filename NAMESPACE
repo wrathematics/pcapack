@@ -2,4 +2,4 @@
 
 export(cov2)
 export(scale2)
-useDynLib(PCAPACK, R_cov, R_scale)
+useDynLib(pcapack, R_cov, R_scale)
