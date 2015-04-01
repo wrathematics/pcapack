@@ -1,3 +1,21 @@
+#' PCA
+#' 
+#' Principal components analysis.
+#' 
+#' @param x
+#' The input matrix or dataframe.
+#' @param retx
+#' Return the rotated variables?
+#' @param center
+#' Center the matrix first?
+#' @param scale
+#' Scale the matrix first?
+#' @param method
+#' "svd" for svd of data matrix, or "eigcov" for eigenvalue decomposition
+#' of the covariance matrix.
+#' 
+#' @rdname cov
+#' @export
 pca <- function(x, retx=TRUE, center=TRUE, scale=FALSE, method="svd")
 {
   method <- match.arg(tolower(method), c("svd", "eigcov"))
@@ -9,6 +27,8 @@ pca <- function(x, retx=TRUE, center=TRUE, scale=FALSE, method="svd")
     ret <- .Call("R_pca_svd", x, as.integer(center), as.integer(scale), as.integer(retx), PACKAGE="pcapack")
   else if (method == "eigcov")
     ret <- .Call("R_pca_eigcov", x, as.integer(retx), PACKAGE="pcapack")
+  
+  class(ret) <- "prcomp"
   
   return(ret)
 }
