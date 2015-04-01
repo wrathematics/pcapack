@@ -14,7 +14,7 @@
 #' "svd" for svd of data matrix, or "eigcov" for eigenvalue decomposition
 #' of the covariance matrix.
 #' 
-#' @rdname cov
+#' @rdname pca
 #' @export
 pca <- function(x, retx=TRUE, center=TRUE, scale=FALSE, method="svd")
 {

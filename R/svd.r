@@ -9,7 +9,7 @@
 #' @param nv
 #' Number of right singular vectors to return.
 #' 
-#' @rdname cov
+#' @rdname svd
 #' @export
 svd2 <- function(x, nu=min(n, p), nv=min(n, p))
 {
