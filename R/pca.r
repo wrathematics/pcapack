@@ -24,9 +24,9 @@ pca <- function(x, retx=TRUE, center=TRUE, scale=FALSE, method="svd")
     storage.mode(x) <- "double"
   
   if (method == "svd")
-    ret <- .Call("R_pca_svd", x, as.integer(center), as.integer(scale), as.integer(retx), PACKAGE="pcapack")
+    ret <- .Call(R_pca_svd, x, as.integer(center), as.integer(scale), as.integer(retx))
   else if (method == "eigcov")
-    ret <- .Call("R_pca_eigcov", x, as.integer(retx), PACKAGE="pcapack")
+    ret <- .Call(R_pca_eigcov, x, as.integer(retx))
   
   class(ret) <- "prcomp"
   

@@ -22,7 +22,7 @@ svd2 <- function(x, nu=min(n, p), nv=min(n, p))
   n <- nrow(x)
   p <- ncol(x)
   
-  ret <- .Call("R_pcapack_svd", as.integer(nu), as.integer(nv), x, PACKAGE="pcapack")
+  ret <- .Call(R_pcapack_svd, as.integer(nu), as.integer(nv), x)
   
   k <- min(dim(x))
   
