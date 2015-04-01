@@ -21,6 +21,7 @@ int pcapack_prcomp_eig(bool retrot, int m, int n, double *x, double *sdev, doubl
 
 // svd.c
 int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *x, double *s, double *u, double *vt);
+int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *x, double * values, double *vectors);
 
 
 #endif
