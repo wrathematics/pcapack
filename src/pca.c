@@ -7,24 +7,24 @@
   setAttrib(Z, R_DimNamesSymbol, X);
 
 
-SEXP R_pca_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
+SEXP R_pca_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETX)
 {
   R_INIT;
   int info = 0;
   const int m = nrows(X), n = ncols(X);
-  const bool retrot = (bool) INT(RETROT);
+  const bool retx = (bool) INT(RETX);
   const bool centerx = (bool) INT(CENTER);
   const bool scalex = (bool) INT(SCALE);
   const int k = m<n?m:n;
   double *x;
   SEXP RET, RET_NAMES, SDEV, TROT, XRET;
-  SEXP pcnames, dimnames;
+  SEXP pcnames, dimnames, xnames;
   
   
   newRvec(SDEV, k, "double");
   newRmat(TROT, k, n, "double");
   
-  if (retrot)
+  if (retx)
   {
     newRmat(XRET, m, n, "double"); // FIXME need to pass in mxn, return mxk
     memcpy(DBLP(XRET), DBLP(X), m*n*sizeof(double));
@@ -33,7 +33,7 @@ SEXP R_pca_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
   else
     x = DBLP(X);
   
-  pcapack_prcomp_svd(centerx, scalex, retrot, m, n, x, DBLP(SDEV), DBLP(TROT));
+  pcapack_prcomp_svd(centerx, scalex, retx, m, n, x, DBLP(SDEV), DBLP(TROT));
   
 /*  if (info != 0)*/
 /*    error(_("info=%d from Lapack routine '%s'"), info, "dgesdd");*/
@@ -41,14 +41,19 @@ SEXP R_pca_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
   pcnames = make_pca_default_colnames(n);
   setDimNames(dimnames, pcnames, TROT);
   
-  if (retrot)
+  if (retx)
   {
-    RET_NAMES = make_list_names(2, "sdev", "rotation", "x");
-    RET = make_list(RET_NAMES, 2, SDEV, TROT, XRET);
+    xnames = make_pca_default_colnames(n);
+    setDimNames(dimnames, xnames, XRET);
+    
+    RET_NAMES = make_list_names(3, "sdev", "rotation", "x");
+    RET = make_list(RET_NAMES, 3, SDEV, TROT, XRET);
   }
   else
+  {
     RET_NAMES = make_list_names(2, "sdev", "rotation");
     RET = make_list(RET_NAMES, 2, SDEV, TROT);
+  }
   
   
   R_END;
@@ -57,11 +62,11 @@ SEXP R_pca_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETROT)
 
 
 
-SEXP R_pca_eigcov(SEXP X, SEXP RETROT)
+SEXP R_pca_eigcov(SEXP X, SEXP RETX)
 {
   R_INIT;
   const int m = nrows(X), n = ncols(X);
-  bool retrot = (bool) INT(RETROT);
+  bool retx = (bool) INT(RETX);
   double *x;
   int info = 0;
   
@@ -74,7 +79,7 @@ SEXP R_pca_eigcov(SEXP X, SEXP RETROT)
   newRvec(SDEV, k, "double");
   newRmat(TROT, k, n, "double");
   
-  if (retrot)
+  if (retx)
   {
     newRmat(XRET, m, n, "double"); // FIXME need to pass in mxn, return mxk
     memcpy(DBLP(XRET), DBLP(X), m*n*sizeof(double));
@@ -83,7 +88,7 @@ SEXP R_pca_eigcov(SEXP X, SEXP RETROT)
   else
     x = DBLP(X);
   
-  info = pcapack_prcomp_eig(&retrot, m, n, x, DBLP(SDEV), DBLP(TROT));
+  info = pcapack_prcomp_eig(&retx, m, n, x, DBLP(SDEV), DBLP(TROT));
   
   pcnames = make_pca_default_colnames(n);
   setDimNames(dimnames, pcnames, TROT);
