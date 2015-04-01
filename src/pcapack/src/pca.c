@@ -100,7 +100,7 @@ int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double 
   dscal_(&(int){n*n}, &tmp, cov, &(int){1});
   
   // Take eigen decomposition
-  pcapack_eig(true, false, true, n, cov, sdev, rotation);
+  info = pcapack_eig(true, false, true, n, cov, sdev, rotation);
   
   // sdev = rev(sqrt(sdev))
   sqrt_rev(n, sdev);
