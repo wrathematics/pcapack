@@ -1,10 +1,10 @@
 #include "pcapack.h"
 
 
-SEXP R_pcapack_svd(SEXP NU, SEXP NV, SEXP M, SEXP N, SEXP X)
+SEXP R_pcapack_svd(SEXP NU, SEXP NV, SEXP X)
 {
   R_INIT;
-  int m = INT(M), n = INT(N);
+  int m = nrows(X), n = ncols(X);
   int info = 0;
   const int minmn = MIN(m, n);
   
