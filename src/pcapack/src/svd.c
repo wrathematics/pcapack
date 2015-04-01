@@ -6,7 +6,7 @@
 #include "lapack.h"
 
 
-int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *x, double *s, double *u, double *vt)
+int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *restrict x, double *restrict s, double *restrict u, double *restrict vt)
 {
   char jobz;
   int i;
@@ -51,7 +51,7 @@ int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *
 
 
 // m == n
-int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *x, double *values, double *vectors)
+int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *restrict x, double *restrict values, double *restrict vectors)
 {
   int info = 0;
   double *x_cp;

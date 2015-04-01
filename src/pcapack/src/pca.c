@@ -13,7 +13,7 @@
 #include "misc.h"
 
 
-int pcapack_prcomp_svd(bool centerx, bool scalex, bool rotx, int m, int n, double *x, double *sdev, double *rotation)
+int pcapack_prcomp_svd(bool centerx, bool scalex, bool retx, int m, int n, double *restrict x, double *restrict sdev, double *restrict rotation)
 {
   char trans = 'n';
   int info;
@@ -23,7 +23,7 @@ int pcapack_prcomp_svd(bool centerx, bool scalex, bool rotx, int m, int n, doubl
   double tmp;
   
   
-  if (centerx || scalex || rotx)
+  if (centerx || scalex || retx)
   {
     x_cp = malloc(m*n * sizeof(*x));
     memcpy(x_cp, x, m*n*sizeof(*x));
@@ -41,14 +41,14 @@ int pcapack_prcomp_svd(bool centerx, bool scalex, bool rotx, int m, int n, doubl
   
   pcapack_xpose(minmn, n, rotation);
   
-  if (rotx)
+  if (retx)
     dgemm_(&trans, &trans, &m, &minmn, &n, &(double){1.0}, x_cp, &m, rotation, &n, &(double){0.0}, x, &m);
   
   tmp = 1. / (MAX(1., sqrt((double) m-1)));
   dscal_(&minmn, &tmp, sdev, &(int){1});
   
   cleanup:
-    if (centerx || scalex || rotx) free(x_cp);
+    if (centerx || scalex || retx) free(x_cp);
     free(u);
   
   return info;
@@ -73,7 +73,7 @@ static inline void sqrt_rev(int n, double *sdev)
   return;
 }
 
-int pcapack_prcomp_eig(bool rotx, int m, int n, double *x, double *sdev, double *rotation)
+int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double *rotation)
 {
   int info = 0;
   int i;
@@ -83,7 +83,7 @@ int pcapack_prcomp_eig(bool rotx, int m, int n, double *x, double *sdev, double 
   char trans = 'N';
   
   
-  if (rotx)
+  if (retx)
   {
     x_cp = malloc(m*n * sizeof(*x));
     memcpy(x_cp, x, m*n*sizeof(*x));
@@ -107,12 +107,12 @@ int pcapack_prcomp_eig(bool rotx, int m, int n, double *x, double *sdev, double 
   
   pcapack_xpose(n, n, rotation);
   
-  if (rotx)
+  if (retx)
     dgemm_(&trans, &trans, &m, &n, &n, &(double){1.}, x, &m, rotation, &n, &(double){0.}, x, &m);
   
   cleanup:
     free(cov);
-    if (rotx) free(x_cp);
+    if (retx) free(x_cp);
   
   return info;
 }
