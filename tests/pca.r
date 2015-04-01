@@ -12,9 +12,9 @@ x <- matrix(rnorm(m*n), m, n)
 
 
 mdl1 <- prcomp(x)
+mdl1$center <- mdl1$scale <- NULL
 mdl2 <- pca(x, method="svd")
-print(all.equal(mdl1$sdev, mdl2$sdev))
-print(all.equal(mdl1$rotation, mdl2$rotation))
+print(all.equal(mdl1, mdl2))
 
 
 mdl1 <- prcomp(x)

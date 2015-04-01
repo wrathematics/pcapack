@@ -4,7 +4,7 @@ set.seed(1234)
 
 test <- function(x, nu, nv)
 {
-  m1 <- LA_svd(x, nu, nv)
+  m1 <- svd2(x, nu, nv)
   m2 <- La.svd(x, nu, nv)
   
   check <- all.equal(m1, m2)
