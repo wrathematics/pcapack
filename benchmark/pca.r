@@ -3,11 +3,11 @@ library(pcapack)
 
 
 set.seed(1234)
-m <- 1200
+m <- 4000
 n <- 350
 x <- matrix(rnorm(m*n), m, n)
 
-reps <- 2
+reps <- 10
 retx <- FALSE
 
 mine <- function(method) {mdl1 <<- pca(x, retx=retx, method=method)}
@@ -25,5 +25,5 @@ cols <- c("test", "replications", "elapsed", "relative")
 benchmark(mine("svd"), R("svd"), columns=cols, replications=reps)
 #all.equal(mdl1, mdl2)
 
-benchmark(mine("eigcov"), R("eigcov"), columns=cols, replications=reps)
+#benchmark(mine("eigcov"), R("eigcov"), columns=cols, replications=reps)
 #all.equal(mdl1, mdl2)

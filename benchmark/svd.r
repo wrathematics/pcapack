@@ -7,9 +7,9 @@ m <- 5000
 n <- 250
 x <- matrix(rnorm(m*n), m, n)
 
-reps <- 5
+reps <- 10
 
-mine <- function() {mdl1 <<- LA_svd(x)}
+mine <- function() {mdl1 <<- svd2(x)}
 R <- function() {mdl2 <<- La.svd(x)}
 
 cols <- c("test", "replications", "elapsed", "relative")
