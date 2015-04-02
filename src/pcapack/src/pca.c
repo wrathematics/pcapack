@@ -101,7 +101,8 @@ int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double 
   
   // Take eigen decomposition
   info = pcapack_eig(true, false, true, n, cov, sdev, rotation);
-  
+  if (info != 0) goto cleanup;
+
   // sdev = rev(sqrt(sdev))
   sqrt_rev(n, sdev);
   
