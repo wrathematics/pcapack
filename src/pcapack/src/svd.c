@@ -74,19 +74,21 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *r
   
   if (likely(symmetric))
   {
-    char jobz;
     char uplo = 'u', trans = 'n';
+    char jobz;
     
     if (only_values) jobz = 'n';
     else             jobz = 'v';
     
     dsyevd_(&jobz, &uplo, &n, x_cp, &n, values, &worksize, &neg1, &liwork, &neg1, &info);
-    
+
     lwork = (int) worksize;
     work = malloc(lwork * sizeof(*work));
     iwork = malloc(liwork * sizeof(*iwork));
     
     dsyevd_(&jobz, &uplo, &n, x_cp, &n, values, work, &lwork, iwork, &liwork, &info);
+    free(work);
+    free(iwork);
   }
   #if 0 // TODO
   else
@@ -108,8 +110,6 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *r
   
   cleanup:
     if (!inplace) free(x_cp);
-  free(work);
-  free(iwork);
 
   return info;
 }
