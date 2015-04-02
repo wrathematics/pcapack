@@ -108,7 +108,9 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *r
   
   cleanup:
     if (!inplace) free(x_cp);
-  
+  free(work);
+  free(iwork);
+
   return info;
 }
 /*dsyevd(jobz, uplo, n, a, lda, w, work, lwork, iwork, liwork, info);*/
