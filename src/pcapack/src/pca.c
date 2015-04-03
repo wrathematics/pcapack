@@ -13,6 +13,36 @@
 #include "misc.h"
 
 
+/**
+ * @file
+ * @brief PCA via SVD
+ *
+ * @details
+ * This computes the principal components of the data matrix x via singular
+ * value decomposition.
+ * 
+ * @param centerx
+ * Input.  Should the data first be centered?
+ * @param scalex
+ * Input,  Should the data first be scaled?
+ * @param retx
+ * Input.  Should x be overwritten by its projection onto the principal components
+ * (right singular vectors)?
+ * @param m,n
+ * Inputs.  Problem size (dims of x)
+ * @param x
+ * In/Output.  The data matrix.  If retx==true, then on successful function
+ * exit, the values of x are the rotations of x onto the pc's.  If retx=false,
+ * x is filled with garbage values.
+ * @param sdev
+ * The standard deviations of the principal components.
+ * @param rotation
+ * The "loadings".
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+*/
 int pcapack_prcomp_svd(bool centerx, bool scalex, bool retx, int m, int n, double *restrict x, double *restrict sdev, double *restrict rotation)
 {
   char trans = 'n';
@@ -73,6 +103,35 @@ static inline void sqrt_rev(int n, double *sdev)
   return;
 }
 
+
+
+/**
+ * @file
+ * @brief PCA via eigcov.
+ *
+ * @details
+ * This computes the principal components of the data matrix x via eigenvalue
+ * decomposition of the covariance matrix.  Note that centering and scaling
+ * of the data is implied (as opposed to optional in the svd method).
+ *
+ * @param retx
+ * Input.  Should x be overwritten by its projection onto the principal components
+ * (right singular vectors)?
+ * @param m,n
+ * Inputs.  Problem size (dims of x)
+ * @param x
+ * In/Output.  The data matrix.  If retx==true, then on successful function
+ * exit, the values of x are the rotations of x onto the pc's.  If retx=false,
+ * x is filled with garbage values.
+ * @param sdev
+ * The standard deviations of the principal components.
+ * @param rotation
+ * The "loadings".
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+*/
 int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double *rotation)
 {
   int info = 0;
@@ -114,4 +173,5 @@ int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double 
   
   return info;
 }
+
 
