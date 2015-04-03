@@ -13,6 +13,10 @@
 #' @export
 svd2 <- function(x, nu=min(n, p), nv=min(n, p))
 {
+  assert.type(x, "numeric")
+  assert.natnum(nu)
+  assert.natnum(nv)
+
   if (!is.matrix(x))
     x <- as.matrix(x)
   

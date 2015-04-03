@@ -12,6 +12,7 @@
 #' @export
 cov2 <- function(x)
 {
+  assert.type(x, "numeric")
   check_mvdf(x)
   
   if (!is.double(x))

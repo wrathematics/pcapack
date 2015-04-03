@@ -18,8 +18,15 @@
 #' @export
 pca <- function(x, retx=TRUE, center=TRUE, scale=FALSE, method="svd")
 {
+  assert.type(method, "character")
   method <- match.arg(tolower(method), c("svd", "eigcov"))
   
+  assert.type(retx, "logical")
+  assert.type(center, "logical")
+  assert.type(scale, "logical")
+  
+  assert.type(x, "numeric")
+
   if (!is.double(x))
     storage.mode(x) <- "double"
   

@@ -11,8 +11,11 @@
 #' @export
 scale2 <- function(x, center=TRUE, scale=TRUE)
 {
+  assert.type(center, "logical")
+  assert.type(scale, "logical")
   check_mvdf(x)
   
+  assert.type(x, "numeric")
   if (!is.double(x))
     storage.mode(x) <- "double"
   
