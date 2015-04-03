@@ -6,6 +6,35 @@
 #include "lapack.h"
 
 
+/**
+ * @file
+ * @brief SVD
+ *
+ * @details
+ * Singular value decomposition.  Uses LAPACK's dgesdd.  Right singular values
+ * (if requested), are returned transposed.  Use xpose if you need them
+ * non-transposed.
+ * 
+ * @param inplace
+ * Input.  Should the svd work on allocated x matrix, or a local copy?
+ * @param nu,nv
+ * Input.  Number of left/right singular vectors to compute.
+ * @maram m,n
+ * Input.  Problem size (dim of x).
+ * @param x
+ * In/Output data matrix.  If inplace==true then the data is destroyed, 
+ * otherwise it's not modified.
+ * @param s
+ * Output.  The singular values.
+ * @param u
+ * Output.  The left singular vectors.
+ * @param vt
+ * Output.  The transpose of the right singular vectors.
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+ */
 int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *restrict x, double *restrict s, double *restrict u, double *restrict vt)
 {
   char jobz;
@@ -51,6 +80,35 @@ int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *
 
 
 // m == n
+
+/**
+ * @file
+ * @brief Eigenvalue decomposition.
+ *
+ * @details
+ * Eigenvalue decomposition.  Uses LAPACK's dsyevd. 
+ *
+ * @param inplace
+ * Input.  Should the svd work on allocated x matrix, or a local copy?
+ * @param only_values
+ * Input.  Should only the values (not vectors) be computed?
+ * @param symmetric
+ * Input.  Is x symmetric?  In this case, only the upper triangle is used.
+ * @maram n
+ * Input.  Problem size (number of rows and columns of x).
+ * @param x
+ * In/Output data matrix.  If inplace==true then on successful function
+ * return, x contains the eigenvectors.  Otherwise it's not modified (and
+ * the vectors parameter contains the vectors).
+ * @param values
+ * Output.  The eigenvalues.
+ * @param vectors
+ * Output.  The eigenvectors (if inplace==false).
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+ */
 int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *restrict x, double *restrict values, double *restrict vectors)
 {
   int info = 0;
@@ -124,4 +182,5 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *r
   return info;
 }
 /*dsyevd(jobz, uplo, n, a, lda, w, work, lwork, iwork, liwork, info);*/
+
 
