@@ -7,7 +7,7 @@
   setAttrib(Z, R_DimNamesSymbol, X);
 
 
-SEXP R_pca_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETX)
+SEXP R_pcapack_prcomp_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETX)
 {
   R_INIT;
   int info = 0;
@@ -62,7 +62,7 @@ SEXP R_pca_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETX)
 
 
 
-SEXP R_pca_eigcov(SEXP X, SEXP RETX)
+SEXP R_pcapack_prcomp_eigcov(SEXP X, SEXP RETX)
 {
   R_INIT;
   const int m = nrows(X), n = ncols(X);

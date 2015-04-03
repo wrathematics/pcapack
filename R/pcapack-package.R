@@ -13,7 +13,8 @@
 #' } 
 #' 
 #' 
-#' @useDynLib pcapack, R_cov, R_scale, R_pca_svd, R_pca_eigcov, R_pcapack_svd
+#' @useDynLib pcapack, R_cov, R_scale, R_pcapack_prcomp_svd, 
+#' R_pcapack_prcomp_eigcov, R_pcapack_svd
 #' 
 #' @name PCAPACK-package
 #' @docType package
