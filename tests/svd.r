@@ -8,8 +8,8 @@ test <- function(x, nu, nv)
   m2 <- La.svd(x, nu, nv)
   
   check <- all.equal(m1, m2)
-  
-  cat(paste("nu=", nu, " nv=", nv, ":\t", check, "\n", sep=""))
+  stopifnot(check)
+  #cat(paste("nu=", nu, " nv=", nv, ":\t", check, "\n", sep=""))
   invisible()
 }
 

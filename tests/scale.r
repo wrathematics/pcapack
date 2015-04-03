@@ -9,17 +9,17 @@ sd <- 1
 x <- matrix(rnorm(m*n, sd=sd, mean=mean), m, n)
 
 
-cat("center=TRUE, scale=FALSE\n")
+# center=TRUE, scale=FALSE
 A <- scale(x, TRUE, FALSE)
 B <- scale2(x, TRUE, FALSE)
 stopifnot(all.equal(A, B, check.attributes=FALSE))
 
-cat("center=FALSE, scale=TRUE\n")
+# center=FALSE, scale=TRUE
 A <- scale(x, FALSE, TRUE)
 B <- scale2(x, FALSE, TRUE)
 stopifnot(all.equal(A, B, check.attributes=FALSE))
 
-cat("center=TRUE, scale=TRUE\n")
+# center=TRUE, scale=TRUE
 A <- scale(x, TRUE, TRUE)
 B <- scale2(x, TRUE, TRUE)
 stopifnot(all.equal(A, B, check.attributes=FALSE))
