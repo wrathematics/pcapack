@@ -1,0 +1,6 @@
+#!/bin/sh
+
+r cov.r
+r pca.r
+r scale.r
+r  svd.r

@@ -19,7 +19,6 @@ stopifnot(all.equal(mdl1, mdl2))
 
 mdl1 <- prcomp(x)
 mdl2 <- pca(x, method="eigcov")
-print(all.equal(mdl1$sdev, mdl2$sdev))
-print(all.equal(unclass(mdl1$loadings), mdl2$rotation))
+stopifnot(all.equal(mdl1, mdl2))
 
 #print(mdl2)
