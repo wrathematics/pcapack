@@ -132,7 +132,7 @@ static inline void sqrt_rev(int n, double *sdev)
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double *rotation)
+int pcapack_prcomp_eigcov(bool retx, int m, int n, double *x, double *sdev, double *rotation)
 {
   int info = 0;
   int i;

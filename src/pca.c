@@ -88,7 +88,7 @@ SEXP R_pcapack_prcomp_eigcov(SEXP X, SEXP RETX)
   else
     x = DBLP(X);
   
-  info = pcapack_prcomp_eig(&retx, m, n, x, DBLP(SDEV), DBLP(TROT));
+  info = pcapack_prcomp_eigcov(&retx, m, n, x, DBLP(SDEV), DBLP(TROT));
   
   pcnames = make_pca_default_colnames(n);
   setDimNames(dimnames, pcnames, TROT);
