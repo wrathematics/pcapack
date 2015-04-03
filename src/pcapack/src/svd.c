@@ -63,22 +63,31 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *r
   static int neg1 = -1;
   
   
-  if (!inplace)
-  {
-    x_cp = malloc(n*n * sizeof(*x_cp));
-    memcpy(x_cp, x, n*n*sizeof(double));
-  }
-  else
+  /*if (!inplace)*/
+  /*{*/
+    /*x_cp = malloc(n*n * sizeof(*x_cp));*/
+    /*memcpy(x_cp, x, n*n*sizeof(double));*/
+  /*}*/
+  /*else*/
+    /*x_cp = x;*/
+  if (inplace)
     x_cp = x;
+  else
+  {
+    memcpy(vectors, x, n*n*sizeof(double));
+    x_cp = vectors;
+  }
   
   
   if (likely(symmetric))
   {
-    char uplo = 'u', trans = 'n';
+    char uplo = 'u';
     char jobz;
     
-    if (only_values) jobz = 'n';
-    else             jobz = 'v';
+    if (only_values)
+      jobz = 'n';
+    else
+      jobz = 'v';
     
     dsyevd_(&jobz, &uplo, &n, x_cp, &n, values, &worksize, &neg1, &liwork, &neg1, &info);
 
@@ -87,6 +96,7 @@ int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *r
     iwork = malloc(liwork * sizeof(*iwork));
     
     dsyevd_(&jobz, &uplo, &n, x_cp, &n, values, work, &lwork, iwork, &liwork, &info);
+
     free(work);
     free(iwork);
   }

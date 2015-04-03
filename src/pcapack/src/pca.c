@@ -78,7 +78,7 @@ int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double 
   int info = 0;
   int i;
   double tmp;
-  double *cov;
+  double *ignored;
   double *x_cp;
   char trans = 'N';
   
@@ -91,17 +91,14 @@ int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double 
   else
     x_cp = x;
   
-  cov = malloc(n*n * sizeof(*cov));
-  
-  info = pcapack_cov(COR_PEARSON, m, n, x, cov);
+  info = pcapack_cov(COR_PEARSON, m, n, x, rotation);
   if (info != 0) goto cleanup;
   
   tmp = 1. - 1./((double) m);
-  dscal_(&(int){n*n}, &tmp, cov, &(int){1});
+  dscal_(&(int){n*n}, &tmp, rotation, &(int){1});
   
   // Take eigen decomposition
-  info = pcapack_eig(true, false, true, n, cov, sdev, rotation);
-
+  info = pcapack_eig(true, false, true, n, rotation, sdev, ignored);
   if (info != 0) goto cleanup;
 
   // sdev = rev(sqrt(sdev))
@@ -113,7 +110,6 @@ int pcapack_prcomp_eig(bool retx, int m, int n, double *x, double *sdev, double 
     dgemm_(&trans, &trans, &m, &n, &n, &(double){1.}, x, &m, rotation, &n, &(double){0.}, x, &m);
   
   cleanup:
-    free(cov);
     if (retx) free(x_cp);
   
   return info;
