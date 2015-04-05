@@ -13,6 +13,9 @@
 #' @export
 svd2 <- function(x, nu=min(n, p), nv=min(n, p))
 {
+  n <- nrow(x)
+  p <- ncol(x)
+
   assert.type(x, "numeric")
   assert.natnum(nu)
   assert.natnum(nv)
@@ -22,9 +25,6 @@ svd2 <- function(x, nu=min(n, p), nv=min(n, p))
   
   if (!is.double(x))
     storage.mode(x) <- "double"
-  
-  n <- nrow(x)
-  p <- ncol(x)
   
   ret <- .Call(R_pcapack_svd, as.integer(nu), as.integer(nv), x)
   
