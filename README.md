@@ -35,19 +35,19 @@ SVD:
 Centering and Scaling:
 ```
 ### center=TRUE, scale=FALSE
-  test replications elapsed relative
-2   Me            5   0.477    1.000
-1    R            5   2.159    4.526
+     test replications elapsed relative
+2 pcapack           10   0.246    1.000
+1       R           10   2.464   10.016
 
 ### center=FALSE, scale=TRUE
-  test replications elapsed relative
-2   Me            5   0.179    1.000
-1    R            5   3.643   20.352
+     test replications elapsed relative
+2 pcapack           10   0.294    1.000
+1       R           10   6.977   23.731
 
 ### center=TRUE, scale=TRUE
-  test replications elapsed relative
-2   Me            5   0.257    1.000
-1    R            5   4.692   18.257
+     test replications elapsed relative
+2 pcapack           10   0.515    1.000
+1       R           10   9.535   18.515
 ```
 
 You can find the source for these benchmarks in the `benchmarks/` tree.
