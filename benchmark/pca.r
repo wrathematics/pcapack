@@ -3,7 +3,7 @@ library(pcapack)
 
 
 set.seed(1234)
-m <- 4000
+m <- 5000
 n <- 350
 x <- matrix(rnorm(m*n), m, n)
 
@@ -22,7 +22,7 @@ R <- function(method)
 }
 
 cols <- c("test", "replications", "elapsed", "relative")
-benchmark(mine("svd"), R("svd"), columns=cols, replications=reps)
+benchmark(pcapack=mine("svd"), R= R("svd"), columns=cols, replications=reps)
 #all.equal(mdl1, mdl2)
 
 #benchmark(mine("eigcov"), R("eigcov"), columns=cols, replications=reps)
