@@ -73,7 +73,7 @@ SEXP R_pcapack_prcomp_eigcov(SEXP X, SEXP RETX)
   const int k = m<n?m:n;
   
   SEXP RET, RET_NAMES, SDEV, TROT, XRET;
-  SEXP pcnames, dimnames;
+  SEXP pcnames, dimnames, xnames;
   
   
   newRvec(SDEV, k, "double");
@@ -93,9 +93,22 @@ SEXP R_pcapack_prcomp_eigcov(SEXP X, SEXP RETX)
   pcnames = make_pca_default_colnames(n);
   setDimNames(dimnames, pcnames, TROT);
   
-  RET_NAMES = make_list_names(2, "sdev", "rotation");
-  RET = make_list(RET_NAMES, 2, SDEV, TROT);
+
+  if (retx)
+  {
+    xnames = make_pca_default_colnames(n);
+    setDimNames(dimnames, xnames, XRET);
+    
+    RET_NAMES = make_list_names(3, "sdev", "rotation", "x");
+    RET = make_list(RET_NAMES, 3, SDEV, TROT, XRET);
+  }
+  else
+  {
+    RET_NAMES = make_list_names(2, "sdev", "rotation");
+    RET = make_list(RET_NAMES, 2, SDEV, TROT);
+  }
   
+
   R_END;
   return RET;
 }
