@@ -6,6 +6,10 @@
 #' 
 #' @param x
 #' The input matrix, vector, or dataframe.
+#' @param center
+#' Logical; should the data be centered first? (yes!)
+#' @param scale
+#' Logical; should the data be scaled first? (probably!)
 #' 
 #' @rdname scale
 #' @export

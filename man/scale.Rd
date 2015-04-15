@@ -8,6 +8,10 @@ scale2(x, center = TRUE, scale = TRUE)
 }
 \arguments{
 \item{x}{The input matrix, vector, or dataframe.}
+
+\item{center}{Logical; should the data be centered first? (yes!)}
+
+\item{scale}{Logical; should the data be scaled first? (probably!)}
 }
 \description{
 An efficient method of centering and/or scaling a matrix or vector.
