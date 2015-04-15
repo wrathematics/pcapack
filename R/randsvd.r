@@ -42,7 +42,7 @@ rand.svd_R <- function(A, k, q, compute.u, compute.vt)
   if (compute.u)
   {
     u <- svd.B$u
-    u <- Q %*% U
+    u <- Q %*% u
     
     d <- svd.B$d
     
@@ -76,82 +76,34 @@ rand.svd_R <- function(A, k, q, compute.u, compute.vt)
 
 
 
-# Fortran code
-rand.svd_F <- function(A, k, q, compute.u, compute.vt)
-{
-  method <- 'R'
-  
-  m <- as.integer(nrow(A))
-  n <- as.integer(ncol(A))
-  
-  if (!is.double(A))
-    storage.mode(A) <- "double"
-  
-  if (compute.u)
-    compute.u <- 'V'
-  else
-    compute.u <- 'N'
-  
-  if (compute.vt)
-    compute.vt <- 'V'
-  else
-    compute.vt <- 'N'
-  
-  ret <- .Call("R_randsvd", method, m, n, A, as.integer(k), as.integer(q), compute.u, compute.vt, 
-                PACKAGE="pcapack")
-  
-  return( ret )
-}
-
-
-
 # Unified method
-rand.svd <- function(A, k=1, q=3, compute.u=TRUE, compute.vt=TRUE, method="Fortran")
+rand.svd <- function(x, k=1, q=3, compute.u=TRUE, compute.vt=TRUE)
 {
-  ### input parameter checking
+  ### Cheap checks first
+  assert.type(compute.u, "logical")
+  assert.type(compute.vt, "logical")
   
-  # check A
-  if (!is.numeric(A)) 
-    stop("'A' must be numeric")
-  if (any(is.na(A)))
-    stop("missing values not allowed")
-  if (any(!is.finite(A))) 
-    stop("infinite values not allowed")
-  if (!is.matrix(A))
-    dim(A) <- c(length(A), 1L)
-  
-  # check k
-  if (!is.int(k) || k<0)
-    stop("'k' must be a positive integer")
-  
+  assert.natnum(k)
   k <- as.integer(k)
-  
-  # check q
-  if (!is.int(q) || q<0)
-    stop("'q' must be a positive integer")
   if (k > nrow(A))
     stop("'k' must be no greater than nrow(A)")
   
+  assert.natnum(q)
   q <- as.integer(q)
   
-  # check compute.u and compute.vt
-  if (!is.logical(compute.u))
-    stop("'compute.u' must be logical")
-  if (!is.logical(compute.vt))
-    stop("'compute.vt' must be logical")
-  
-  # check method
-  method <- match.arg(tolower(method), c("fortran", "r"))
-  
-  
-  ### Call the appropriate function
-  if (method == "fortran")
-    ret <- rand.svd_F(A=A, k=k, q=q, compute.u=compute.u, compute.vt=compute.vt)
-  else
-    ret <- rand.svd_R(A=A, k=k, q=q, compute.u=compute.u, compute.vt=compute.vt)
+  assert.type(x, "numeric")
+    ### TODO do this in one pass, idiot
+#  if (any(is.na(A)))
+#    stop("missing values not allowed")
+#  if (any(!is.finite(A))) 
+#    stop("infinite values not allowed")
+  if (!is.matrix(A))
+    dim(A) <- c(length(A), 1L)
   
   
-  return( ret )
+  ### TODO .Call, etc.
+  warning("not done, don't use this")
+  invisible()
 }
 
 
