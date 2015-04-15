@@ -25,9 +25,12 @@ endif()
 
 ### Source files
 set(RAND
-	src/rand/old/rand.c
-	src/rand/old/rand_mt.c
-	src/rand/old/rand_normal.c
+	src/rand/rand_normal.c
+	src/rand/rand_tab.c
+	src/rand/rand_uniform.c
+	src/rand/rng_interface.c
+	src/rand/samplers.c
+	src/rand/utils.c
 )
 
 set(SUMSTATS
