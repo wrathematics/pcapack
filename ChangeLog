@@ -1,3 +1,5 @@
-======================= Log Before Release =====================================
-2013-6-26:
-  * Package initialized.
+Release 0.1.0:
+	* Added (slightly) faster pca.
+	* Added (slightly) faster svd.
+	* Added faster covariance.
+	* Added faster scaler.
