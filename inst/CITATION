@@ -1,28 +1,13 @@
-citHeader("To cite ffpca in a publication use:")
+citHeader("To cite pcapack in a publication use:")
 
 citEntry(
   entry = "Misc",
-  title = "ffpca:  First Few Principal Components",
-  author = personList(as.person("Drew Schmidt"),
-                      as.person("George Ostrouchov"),
-                      as.person("Christian Heckendorf")),
-  year = "2012",
+  title = "pcapack:  Principal Components Analysis Tools and Utilities",
+  author = personList(as.person("Drew Schmidt")),
+  year = "2015",
   note = "{R} Package",
-  url = "http://cran.r-project.org/package=ffpca",
-  textVersion = "Schmidt, D. and Ostrouchov, G., with contributions from Heckendorf, C. (2013) ffpca: First Few Principal Components. R Package, URL http://cran.r-project.org/package=ffpca",
-  key = "Schmidt2013ffpcapackage"
-)
-
-citEntry(
-  entry = "Manual",
-  title = "A Quick Guide for the ffpca Package",
-  author = personList(as.person("Drew Schmidt"),
-                      as.person("George Ostrouchov"),
-                      as.person("Christian Heckendorf")),
-  year = "2013",
-  note = "{R} Vignette",
-  url = "http://cran.r-project.org/package=ffpca",
-  textVersion = "Schmidt, D. and Ostrouchov, G., with contributions from Heckendorf, C. (2013) A Quick Guide for the ffpca Package. R Vignette, URL http://cran.r-project.org/package=ffpca",
-  key = "Schmidt2013ffpcavignette"
+  url = "https://github.com/wrathematics/pcapack",
+  textVersion = "Schmidt, D. (2015) pcapack:  Principal Components Analysis Tools and Utilities. R Package, URL https://github.com/wrathematics/pcapack",
+  key = "Schmidt2015pcapack"
 )
 
