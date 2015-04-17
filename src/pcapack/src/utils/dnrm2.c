@@ -3,7 +3,7 @@
 #include <math.h>
 #include "../lapack.h"
 
-double dnrm2(int n, double *x, int incx)
+double dnrm2(int n, double *restrict x, int incx)
 {
   int ix;
   double absxi, norm, scale, ssq;
