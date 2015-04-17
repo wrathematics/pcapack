@@ -12,11 +12,16 @@
 void dscal_(int *n, double *a, double *x, int *incx);
 void daxpy_(int *n, double *a, double *x, int *incx, double *y, int *incy);
 
-void dgemv_(char *trans, int *m, int *n, double *alpha, double *a, int *lda, double *x, int *incx, double *beta, double *y, int *incy);
+void dgemv_(const char *trans, const int *m, const int *n, const double *alpha, 
+            const double *a, const int *lda, const double *x, const int *incx, 
+            const double *beta, double *y, const int *incy);
 void dger_(int *m, int *n, double *alpha, double *x, int *incx, double *y, int *incy, double *a, int *lda);
 
 void dsyrk_(char *uplo, char *trans, int *n, int *k, double *alpha, double *a, int *lda, double *beta, double *c, int *ldc);
-void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *restrict a, int *lda, double *restrict b, int *ldb, double *beta, double *restrict c, int *ldc);
+void dgemm_(const char *transa, const char *transb, const int *m, const int *n, 
+            const int *k, const double *alpha, const double *restrict a, 
+            const int *lda, const double *restrict b, const int *ldb, 
+            const double *beta, double *restrict c, const int *ldc);
 
 
 
@@ -33,6 +38,11 @@ void dgesdd_(char *jobz, int *m, int *n, double *a, int *lda, double *s, double 
 void dsyevd_(char *jobz, char *uplo, int *n, double *a, int *lda, double *w, double *work, int *lwork, int *iwork, int *liwork, int *info);
 void dsyevr_(char *jobz, char *range, char *uplo, int *n, double *a, int *lda, double *vl, double *vu, int *il, int *iu, double *abstol, int *m, double *w, double *z, int *ldz, int *isuppz, double *work, int *lwork, int *iwork, int *liwork, int *info);
 void dgeev_(char *jobvl, char *jobvr, int *n, double *a, int *lda, double *wr, double *wi, double *vl, int *ldvl, double *vr, int *ldvr, double *work, int *lwork, int *info);
+
+
+
+// Custom
+double dnrm2(int n, double *x, int incx);
 
 
 #endif
