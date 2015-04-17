@@ -158,6 +158,7 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       colmean = 0;
       colvar = 0;
       
+      #pragma omp simd
       for (i=0; i<m; i++)
       {
         dt = x[i + m*j] - colmean;
@@ -182,10 +183,12 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       colmean = 0;
       
       // Get column mean
+      #pragma omp simd
       for (i=0; i<m; i++)
         colmean += x[i   + m*j] * div;
       
       // Remove mean from column
+      #pragma omp simd
       for (i=0; i<m; i++)
         x[i   + m*j] -= colmean;
       
@@ -201,6 +204,7 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       colvar = 0;
       
       // Get column variance
+      #pragma omp simd
       for (i=0; i<m; i++)
       {
         tmp = x[i + m*j];
@@ -210,6 +214,7 @@ int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x
       colvar = sqrt(colvar);
       
       // Remove variance from column
+      #pragma omp simd
       for (i=0; i<m; i++)
         x[i + m*j] /= colvar;
     }

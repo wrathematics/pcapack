@@ -29,9 +29,12 @@ int pcapack_colsums(const int m, const int n, double *x, double *colsums)
   int i, j;
   double tmp;
   
+  #pragma omp parallel for
   for (j=0; j<m; j++)
   {
     tmp = 0.;
+    
+    #pragma omp simd
     for (i=0; i<n; i++)
     {
       tmp += x[i + m*j];
@@ -49,6 +52,7 @@ double pcapack_mean(const int n, double *x)
   const double divbyn = 1. / ((double) n);
   double mean = 0.;
   
+  #pragma omp parallel for simd
   for (i=0; i<n; i++)
     mean += x[i] * divbyn;
   
@@ -63,9 +67,12 @@ int pcapack_rowmeans(const int m, const int n, double *x, double *rowsums)
   double tmp;
   const double divbyn = 1. / ((double) n);
   
+  #pragma omp parallel for
   for (i=0; i<n; i++)
   {
     tmp = 0.;
+    
+    #pragma omp simd
     for (j=0; j<m; j++)
     {
       tmp += x[i + m*j] * divbyn;
