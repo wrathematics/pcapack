@@ -33,7 +33,25 @@ bool pcapack_is_symmetric(const int m, const int n, double *x)
 
 
 
-// make symmetric via copying from one triangle to the other.
+/**
+ * @file
+ * @brief Symmetrize a matrix.
+ *
+ * @details
+ * Makes x symmetric via copying from one triangle to the other.
+ * 
+ * @param triang
+ * The triangle to copy FROM.  So if trang is UPPER, then the upper
+ * triangle is copied ONTO the lower triangle.
+ * @param m,n
+ * Inputs.  Problem size (dims of x)
+ * @param x
+ * In/Output.  The data matrix.
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+*/
 int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
 {
   int i, j;
@@ -68,8 +86,27 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
 
 
 
-// t(x) * x
-int pcapack_crossprod(int m, int n, double *x, double alpha, double *c)
+/**
+ * @file
+ * @brief Matrix crossproduct.
+ *
+ * @details
+ * Computes t(x) * x using a rank-k symmetric update.  Uses dsyrk.
+ * 
+ * @param m,n
+ * Inputs.  Problem size (dims of x)
+ * @param x
+ * Input.  The data matrix.
+ * @param alpha
+ * Value to multiply against output C.
+ * @param c
+ * Output (the crossproduct).
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+*/
+int pcapack_crossprod(int m, int n, double *restrict x, double alpha, double *restrict c)
 {
   int info = 0;
   
@@ -80,7 +117,27 @@ int pcapack_crossprod(int m, int n, double *x, double alpha, double *c)
 }
 
 
-// x * t(x)
+
+/**
+ * @file
+ * @brief Transpose of matrix crossproduct.
+ *
+ * @details
+ * Computes x * t(x) using a rank-k symmetric update.  Uses dsyrk.
+ * 
+ * @param m,n
+ * Inputs.  Problem size (dims of x)
+ * @param x
+ * Input.  The data matrix.
+ * @param alpha
+ * Value to multiply against output C.
+ * @param c
+ * Output (the tcrossproduct).
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+*/
 int pcapack_tcrossprod(int m, int n, double *x, double alpha, double *c)
 {
   int info = 0;
