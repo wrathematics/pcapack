@@ -42,12 +42,14 @@ set(SUMSTATS
 )
 
 set(UTILS
+	src/utils/distances.c
 	src/utils/dnrm2.c
 	src/utils/rank.c
 	src/utils/xpose.c
 )
 
 SET(PCA
+#	src/fastmap.c
 	src/svd.c
 	src/pca.c
 )
