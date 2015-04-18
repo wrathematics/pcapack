@@ -36,18 +36,18 @@ Centering and Scaling:
 ```
 ### center=TRUE, scale=FALSE
      test replications elapsed relative
-2 pcapack           10   0.246    1.000
-1       R           10   2.464   10.016
+2 pcapack           10   0.236    1.000
+1       R           10   2.401   10.174
 
 ### center=FALSE, scale=TRUE
      test replications elapsed relative
-2 pcapack           10   0.294    1.000
-1       R           10   6.977   23.731
+2 pcapack           10   0.280    1.000
+1       R           10   6.835   24.411
 
 ### center=TRUE, scale=TRUE
      test replications elapsed relative
-2 pcapack           10   0.515    1.000
-1       R           10   9.535   18.515
+2 pcapack           10   0.481    1.000
+1       R           10   9.300   19.335
 ```
 
 You can find the source for these benchmarks in the `benchmarks/` tree.
@@ -64,7 +64,7 @@ All tests performed using:
 To install, you will need: 
 
 * cmake >= 2.8.1
-* A C99 compatible compiler with OpenMP support.
+* A C99 compatible compiler with OpenMP >= 4 support.
 * LAPACK and BLAS libraries (will use R's if installing the R package)
 * R >= 2.14.0 and the RNACI package (if installing the R package)
 
