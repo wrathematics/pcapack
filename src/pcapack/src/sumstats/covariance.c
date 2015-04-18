@@ -11,7 +11,29 @@
 
 
 // centering is done in-place
-int pcapack_cov(const int method, int m, int n, double *x, double *cov)
+
+/**
+ * @file
+ * @brief Covariance.
+ *
+ * @details
+ * Computes the variance-covariance matrix.  Centering is done in-place.
+ * 
+ * @param method
+ * Input.  The form the covariance matrix takes (pearson, kendall, 
+ * spearman).  Currently only pearson works.
+ * @param m,n
+ * Inputs.  Problem size (dims of x)
+ * @param x
+ * Input.  The data matrix.
+ * @param coc
+ * Output.  The covariance matrix.
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+*/
+int pcapack_cov(const int method, int m, int n, double *restrict x, double *restrict cov)
 {
   int info = 0;
   const double alpha = 1. / ((double) m-1);
