@@ -50,7 +50,7 @@ Centering and Scaling:
 1       R           10   9.300   19.335
 ```
 
-You can find the source for these benchmarks in the `benchmarks/` tree.
+You can find the source for these benchmarks in the `inst/benchmarks/` tree.
 All tests performed using:
 
 * R 3.1.2
