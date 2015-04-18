@@ -58,9 +58,6 @@ double stdnorm(rng_state_t *rs)
   unsigned int i, j;
   double x, y, U;
   
-  // Check that the RNG has been initialized; if not, start it
-  rng_check(rs);
-  
   while(1)
   {
     // 1
@@ -104,7 +101,6 @@ double rnorm(rng_state_t *rs, const double mn, const double sd)
 {
   double N;
   
-  // Check that the RNG has been initialized; if not, start it
   rng_check(rs);
   
   N = sd*stdnorm(rs) + mn;
@@ -112,23 +108,4 @@ double rnorm(rng_state_t *rs, const double mn, const double sd)
   return N;
 }
 
-
-double* rnorm_arr(rng_state_t *rs, const int n, const double mn, const double sd)
-{
-  int i, cf, sign[2] = {-1,1};
-  double z;
-  double* nrml;
-  
-  nrml = malloc(n * sizeof(double));
-  
-  // Check that the RNG has been initialized; if not, start it
-  rng_check(rs);
-  
-  for (i = 0; i < n; i++){
-    cf = rng_extract(rs) % 2;
-    nrml[i] = sd * sign[cf] * stdnorm(rs) + mn;
-  }
-  
-  return nrml;
-}
 
