@@ -44,6 +44,7 @@ set(SUMSTATS
 set(UTILS
 	src/utils/distances.c
 	src/utils/dnrm2.c
+	src/utils/inverse.c
 	src/utils/rank.c
 	src/utils/xpose.c
 )

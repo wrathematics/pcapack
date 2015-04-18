@@ -19,6 +19,7 @@
 int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, double *x, double *sdev, double *rotation);
 int pcapack_prcomp_eigcov(bool retrot, int m, int n, double *x, double *sdev, double *rotation);
 
+
 // svd.c
 int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *x, double *s, double *u, double *vt);
 int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *x, double * values, double *vectors);
