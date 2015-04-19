@@ -9,6 +9,7 @@
 #include "lapack.h"
 #include "sumstats/sumstats.h"
 
+
 static inline double sign(double x)
 {
   if (x > 0.)
@@ -27,11 +28,13 @@ int pcapack_cma(int n, int p, double *restrict x, int k)
 {
   char trans = 'n';
   int info = 0;
-  int i, j, l, ncol;
+  int i, j, l;
+  int ncol = p;
   int intone = 1;
   double one = 1., negone = -1., negtwo = -2., zero = 0.;
   double tmp, best;
   double *a, *b, *y, *work;
+  rng_state_t rs;
   
   if (n < 1 || p < 1) return 0;
   if (k > n) return -1;
@@ -43,16 +46,22 @@ int pcapack_cma(int n, int p, double *restrict x, int k)
   work = malloc(p * sizeof(*work));
   
   
+  // TODO seed handling outside fastmap, etc
+  rng_prepare(&rs);
+  rng_set_type(&rs, RNG_TYPE_MT);
+  rng_init(&rs, 1234);
+  
+  
   // The CMA
   for (i=0; i<k; i++)
   {
-    ncol = p-i;
+    ncol--;
     
     // Select pivot row pair
-    pcapack_fastmap(n, ncol, x+(n*i), a, b, work);
+    pcapack_fastmap(&rs, n, ncol, x+(n*i), a, b, work);
     
     // Translate rows to pivot origin
-    pcapack_sweep(n, ncol, x+(n*i), a, ncol, 2, MINUS);
+    pcapack_sweep(n, ncol, x+(n*i), a, ncol, COLS, MINUS);
     
     // Apply householder reflection on right
     daxpy_(&ncol, &negone, a, &intone, b, &intone);
@@ -84,7 +93,7 @@ int pcapack_cma(int n, int p, double *restrict x, int k)
     // a is the point (in x) furthest from a random vector in x
     // b is the point (in x) furthest from point a
     // work is a workspace array
-static inline void bestdist(int m, int ncol, double *restrict x, double *restrict a, double *restrict b, double *restrict work)
+static inline void bestdist(int n, int ncol, double *restrict x, double *restrict a, double *restrict b, double *restrict work)
 {
   int i, j;
   int ia;
@@ -94,10 +103,10 @@ static inline void bestdist(int m, int ncol, double *restrict x, double *restric
   
   best = 0.;
   
-  for (i=0; i<m; i++)
+  for (i=0; i<n; i++)
   {
     for (j=0; j<ncol; j++)
-      work[j] = -1. * x[i + m*j];
+      work[j] = -1. * x[i + n*j];
     
     daxpy_(&ncol, &one, b, &intone, work, &intone);
     tmp = dnrm2(ncol, work, 1);
@@ -110,22 +119,23 @@ static inline void bestdist(int m, int ncol, double *restrict x, double *restric
   }
   
   for (j=0; j<ncol; j++)
-    a[j] = x[ia + m*j];
+    a[j] = x[ia + n*j];
   
 }
 
 
 // x[n, ncol]
-void pcapack_fastmap(int n, int ncol, double *restrict x, double *restrict a, double *restrict b, double *restrict work)
+void pcapack_fastmap(rng_state_t *rs, int n, int ncol, double *restrict x, double *restrict a, double *restrict b, double *restrict work)
 {
   // a, b, work of length ncol
-  int i, j, ia, ib;
+  int i, ia, ib;
   
   // Take random row b in x;
-  ia = rand()%n + 1;// TODO use custom rng
+/*  ia = rand()%n;// TODO use custom rng*/
+  ia = sample(rs, 1, n);
   
-  for (j=0; j<ncol; j++)
-    b[j] = x[ia + n*j];
+  for (i=0; i<ncol; i++)
+    b[i] = x[ia + n*i];
   
   // Find all distances in x from b
   bestdist(n, ncol, x, a, b, work);

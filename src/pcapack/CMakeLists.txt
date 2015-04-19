@@ -31,6 +31,8 @@ set(RAND
 	src/rand/rng_interface.c
 	src/rand/samplers.c
 	src/rand/utils.c
+	src/rand/mrg/rand_mrg.c
+	src/rand/mt/rand_mt.c
 )
 
 set(SUMSTATS

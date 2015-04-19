@@ -14,7 +14,7 @@
 #' 
 #' 
 #' @useDynLib pcapack, R_cov, R_scale, R_pcapack_prcomp_svd, 
-#' R_pcapack_prcomp_eigcov, R_pcapack_svd
+#' R_pcapack_prcomp_eigcov, R_pcapack_svd, R_pcapack_cma
 #' 
 #' @name PCAPACK-package
 #' @docType package

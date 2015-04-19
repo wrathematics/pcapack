@@ -11,13 +11,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "rand/rand.h"
 #include "sumstats/sumstats.h"
 #include "utils/utils.h"
 
 
 // fastmap.c
-void pcapack_fastmap(int n, int ncol, double *x, double *a, double *b, double *work);
+void pcapack_fastmap(rng_state_t *rs, int n, int ncol, double *x, double *a, double *b, double *work);
 int pcapack_cma(int n, int p, double *x, int k);
+
 
 // pca.c
 int pcapack_prcomp_svd(bool centerx, bool scalex, bool retrot, int m, int n, double *x, double *sdev, double *rotation);
