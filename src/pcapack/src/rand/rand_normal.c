@@ -73,7 +73,7 @@ double stdnorm(rng_state_t *rs)
     else if (i == 0)
     {
       y = -log(j * I32BIT);
-      U = runif1(rs, 0, 1);
+      U = runif(rs, 0, 1);
       if (-2.0*log(U) > y*y){
         x += zig_tab_w[1];
         return x;
@@ -82,7 +82,7 @@ double stdnorm(rng_state_t *rs)
     // 4
     else 
     {
-      U = runif1(rs, 0, 1);
+      U = runif(rs, 0, 1);
       y = ( snp_zig_tab_x[i-1] - snp_zig_tab_x[i] )*U + snp_zig_tab_x[i];
       
       if (y < std_norm_pdf(x))
