@@ -21,22 +21,22 @@ void gen_zig_tabs()
   const double v = 0.00492867323399;
   int i;
   double tmp;
-
+  
   // x
   zig_tab_x[ZT_SIZE-1] = r;
-
+  
   for (i = ZT_SIZE-2; i > 0; i--)
     zig_tab_x[i] = sqrt(-2.0*log(v/zig_tab_x[i+1] + std_norm_pdf(zig_tab_x[i+1])));
-
+  
   // w
   zig_tab_w[0] = pow(0.5, 32.0) * v / std_norm_pdf(r);
-
+  
   for (i = 1; i < ZT_SIZE; i++)
     zig_tab_w[i] = pow(0.5, 32.0) * zig_tab_x[i];
-
+  
   // k
   zig_tab_k[0] = pow(2.0, 32.0) * r * std_norm_pdf(r) / v;
-
+  
   for (i = 1; i < ZT_SIZE; i++)
     zig_tab_k[i] = pow(2.0, 32.0) * zig_tab_x[i-1] / zig_tab_x[i];
 }

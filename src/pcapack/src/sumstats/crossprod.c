@@ -11,7 +11,7 @@
 #include "../lapack.h"
 
 
-bool pcapack_is_symmetric(const int m, const int n, double *x)
+bool pcapack_is_symmetric(const int m, const int n, const double *restrict x)
 {
   int i, j;
   const int k = MIN(m, n);
@@ -106,7 +106,7 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int pcapack_crossprod(int m, int n, double *restrict x, double alpha, double *restrict c)
+int pcapack_crossprod(int m, int n, const double *restrict x, double alpha, double *restrict c)
 {
   int info = 0;
   
@@ -138,55 +138,12 @@ int pcapack_crossprod(int m, int n, double *restrict x, double alpha, double *re
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int pcapack_tcrossprod(int m, int n, double *x, double alpha, double *c)
+int pcapack_tcrossprod(int m, int n, const double *x, double alpha, double *c)
 {
   int info = 0;
   
   dsyrk_(&(char){'u'}, &(char){'n'}, &m, &n, &alpha, x, &m, &(double){0.0}, c, &m);
   info = pcapack_symmetrize(UPPER, m, m, c);
-  
-  return info;
-}
-
-
-
-int pcapack_inverse(bool inplace, int n, double *x)
-{
-  int info = 0;
-  int *ipiv;
-  int lwork;
-  double tmp;
-  double *x_cp, *work;
-  
-  
-  if (!inplace)
-  {
-    x_cp = malloc(n*n * sizeof(*x_cp));
-    memcpy(x_cp, x, n*n*sizeof(double));
-  }
-  else
-    x_cp = x;
-  
-  // Factor x = LU
-  ipiv = malloc(n * sizeof(*ipiv));
-  dgetrf_(&n, &n, x_cp, &n, ipiv, &info);
-  if (info != 0) goto cleanup;
-  
-  
-  // Invert
-  lwork = -1;
-  dgetri_(&n, x_cp, &n, ipiv, &tmp, &lwork, &info);
-  if (info != 0) goto cleanup;
-  
-  lwork = (int) tmp;
-  work = malloc(lwork * sizeof(*work));
-  dgetri_(&n, x_cp, &n, ipiv, work, &lwork, &info);
-  
-  
-  free(work);
-  cleanup:
-  free(ipiv);
-  if (!inplace) free(x_cp);
   
   return info;
 }

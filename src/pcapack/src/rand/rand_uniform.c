@@ -11,12 +11,10 @@
 #include "rand.h"
 
 
-// random number from min to max
 double runif(rng_state_t *rs, const double min, const double max)
 {
   double ret;
   
-  // Check that the RNG has been initialized; if not, start it
   rng_check(rs);
   
   ret = min + (max-min)*((double) rng_extract(rs))*I32BIT;
@@ -29,9 +27,8 @@ double runif(rng_state_t *rs, const double min, const double max)
 void runif_arr(rng_state_t *rs, double *x, const int len, const double min, const double max)
 {
   int i;
-  const double mmm = max - min; // max minus min
+  const double mmm = max - min;
   
-  // Check that the RNG has been initialized; if not, start it
   rng_check(rs);
   
   
@@ -41,13 +38,11 @@ void runif_arr(rng_state_t *rs, double *x, const int len, const double min, cons
 
 
 
-// random integer n with min <= n <= max
 int runif_int(rng_state_t *rs, const int min, const int max)
 {
   int ret;
-  const int mmm = max - min + 1; // max minus min
+  const int mmm = max - min + 1;
   
-  // Check that the RNG has been initialized; if not, start it
   rng_check(rs);
   
   
@@ -61,9 +56,8 @@ int runif_int(rng_state_t *rs, const int min, const int max)
 void runif_int_arr(rng_state_t *rs, int *x, const int len, const int min, const int max)
 {
   int i;
-  const int mmm = max - min + 1; // max minus min
+  const int mmm = max - min + 1;
   
-  // Check that the RNG has been initialized; if not, start it
   rng_check(rs);
   
   

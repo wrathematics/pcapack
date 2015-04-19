@@ -17,7 +17,9 @@ void dgemv_(const char *trans, const int *m, const int *n, const double *alpha,
             const double *beta, double *y, const int *incy);
 void dger_(int *m, int *n, double *alpha, double *x, int *incx, double *y, int *incy, double *a, int *lda);
 
-void dsyrk_(char *uplo, char *trans, int *n, int *k, double *alpha, double *a, int *lda, double *beta, double *c, int *ldc);
+void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k, 
+            const double *alpha, const double *a, const int *lda, 
+            const double *beta, double *c, const int *ldc);
 void dgemm_(const char *transa, const char *transb, const int *m, const int *n, 
             const int *k, const double *alpha, const double *restrict a, 
             const int *lda, const double *restrict b, const int *ldb, 
