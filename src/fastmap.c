@@ -1,22 +1,23 @@
 #include "pcapack.h"
 
-void cma_(int *n, int *p, double *x, int *k, int *info);
-
+int pcapack_cma(int n, int p, double *x, int k);
 
 SEXP R_cma(SEXP X, SEXP K)
 {
-  int m = nrows(X), n = ncols(X);
-  int info = 0;
+  R_INIT;
+  const int n = nrows(X), p = ncols(X);
+  const int k = INT(K);
+  int info;
   SEXP CPX;
-  PROTECT(CPX = allocMatrix(REALSXP, m, n));
+  newRmat(CPX, n, p, "dbl");
   
-  memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
+  memcpy(DBL(CPX), DBL(X), n*p*sizeof(double));
   
-  cma_(&m, &n, REAL(CPX), INTEGER(K), &info);
+  info = pcapack_cma(n, p, DBL(CPX), k;
   
   if (info != 0) error("TODO\n");
   
-  UNPROTECT(1);
+  R_END;
   return CPX;
 }
 

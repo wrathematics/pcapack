@@ -49,7 +49,7 @@ set(UTILS
 )
 
 SET(PCA
-#	src/fastmap.c
+	src/fastmap.c
 	src/svd.c
 	src/pca.c
 )
