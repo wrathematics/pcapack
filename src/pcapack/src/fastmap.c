@@ -24,7 +24,30 @@ static inline double sign(double x)
 
 #define PCAPACK_OOM -2147483647
 
-int pcapack_cma(int n, int p, double *restrict x, int k)
+
+/**
+ * @file
+ * @brief Coordinate Mapping Algorithm
+ *
+ * @details
+ * Implementation of the fastmap coordinate mapping algorithm, 
+ * based on the paper:
+ * "A Matrix Computation View of Fastmap and Robustmap Dimension 
+ * Reduction Algorithms", George Ostrouchov, SIAM J. Matrix Anal. 
+ * appl.
+ * 
+ * @param n,p
+ * Inputs.  Problem size (dims of x)
+ * @param x
+ * In/Output.  The data matrix.  
+ * @param k
+ * TODO
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+*/
+int pcapack_cma(const int n, const int p, double *restrict x, const int k)
 {
   char trans = 'n';
   int info = 0;
@@ -46,17 +69,14 @@ int pcapack_cma(int n, int p, double *restrict x, int k)
   work = malloc(p * sizeof(*work));
   
   
-  // TODO seed handling outside fastmap, etc
+  // TODO seed handling
   rng_prepare(&rs);
   rng_set_type(&rs, RNG_TYPE_MT);
   rng_init(&rs, 1234);
   
   
-  // The CMA
   for (i=0; i<k; i++)
   {
-    ncol--;
-    
     // Select pivot row pair
     pcapack_fastmap(&rs, n, ncol, x+(n*i), a, b, work);
     
@@ -75,6 +95,8 @@ int pcapack_cma(int n, int p, double *restrict x, int k)
     dgemv_(&trans, &n, &ncol, &one, x+(n*i), &n, b, &intone, &zero, y, &intone);
     
     dger_(&n, &ncol, &negtwo, y, &intone, b, &intone, x+(n*i), &n);
+    
+    ncol--;
   }
   
   
@@ -131,16 +153,15 @@ void pcapack_fastmap(rng_state_t *rs, int n, int ncol, double *restrict x, doubl
   int i, ia, ib;
   
   // Take random row b in x;
-/*  ia = rand()%n;// TODO use custom rng*/
   ia = sample(rs, 1, n);
   
   for (i=0; i<ncol; i++)
     b[i] = x[ia + n*i];
   
-  // Find all distances in x from b
+  // Let a be the most distant point in x from b
   bestdist(n, ncol, x, a, b, work);
   
-  // Compute all distances in x from a
+  // Let b be the most distant point in x from a
   bestdist(n, ncol, x, b, a, work);
 }
 
