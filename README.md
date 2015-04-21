@@ -14,46 +14,46 @@ particularly stable.
 Covariance:
 ```
      test replications elapsed relative
-2 pcapack           10   0.208    1.000
-1       R           10   3.455   16.611
+2 pcapack           10   0.186    1.000
+1       R           10   3.456   18.581
 ```
 
 PCA:
 ```
      test replications elapsed relative
-1 pcapack           10   1.857    1.000
-2       R           10   2.595    1.397
+1 pcapack           10   2.538    1.000
+2       R           10   3.542    1.396
 ```
 
 SVD:
 ```
      test replications elapsed relative
-1 pcapack           10   1.645    1.000
-2       R           10   2.021    1.229
+1 pcapack           10   1.550    1.000
+2       R           10   1.896    1.223
 ```
 
 Centering and Scaling:
 ```
 ### center=TRUE, scale=FALSE
      test replications elapsed relative
-2 pcapack           10   0.236    1.000
-1       R           10   2.401   10.174
+2 pcapack           10   0.244    1.000
+1       R           10   2.356    9.656
 
 ### center=FALSE, scale=TRUE
      test replications elapsed relative
-2 pcapack           10   0.280    1.000
-1       R           10   6.835   24.411
+2 pcapack           10   0.244    1.000
+1       R           10   2.356    9.656
 
 ### center=TRUE, scale=TRUE
      test replications elapsed relative
-2 pcapack           10   0.481    1.000
-1       R           10   9.300   19.335
+2 pcapack           10   0.497    1.000
+1       R           10   7.786   15.666
 ```
 
 You can find the source for these benchmarks in the `inst/benchmarks/` tree.
 All tests performed using:
 
-* R 3.1.2
+* R 3.2.0
 * OpenBLAS
 * gcc 4.9.1
 * 4 cores of a Core i5-2500K CPU @ 3.30GHz
