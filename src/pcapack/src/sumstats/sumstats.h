@@ -44,7 +44,7 @@ int pcapack_colmeans(const int m, const int n, double *x, double *colsums);
 #define COLS 2
 
 int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, int margin, int fun);
-int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x);
+int pcapack_scale(const bool centerx, const bool scalex, const int m, const int n, double *x);
 
 
 

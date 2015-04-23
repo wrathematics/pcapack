@@ -11,8 +11,38 @@
 #include "../omp.h"
 
 
+// It ain't pretty, but function pointers are too expensive
+#define SWEEP_ROWS_SPECIAL(ASSIGNMENT) \
+  for (j=0; j<n; j++){ \
+    for (i=0; i<m; i++){ \
+      x[i + m*j] ASSIGNMENT vec[i]; }}
+
+#define SWEEP_COLS_SPECIAL(ASSIGNMENT) \
+  _Pragma("omp parallel for default(shared) private(i,j,tmp) if(m*n > OMP_MIN_SIZE)") \
+  for (j=0; j<n; j++){ \
+    tmp = vec[j]; \
+    _Pragma("omp simd") \
+    for (i=0; i<m; i++){ \
+      x[i + m*j] ASSIGNMENT tmp; }}
+
+#define SWEEP_ROWS(ASSIGNMENT) \
+  pos = 1; \
+  for (j=0; j<n; j++){ \
+    for (i=0; i<m; i++){ \
+      x[i + m*j] += vec[pos]; \
+      pos = (pos+1) % lvec; }}
+
+#define SWEEP_COLS(ASSIGNMENT) \
+  _Pragma("omp parallel for default(shared) private(i,j,tmp) if(m*n > OMP_MIN_SIZE)") \
+  for (j=0; j<n; j++){ \
+    pos = j%lvec; \
+    _Pragma("omp simd") \
+    for (i=0; i<m; i++){ \
+      x[i + m*j] += vec[pos]; \
+      pos = (pos+n) % lvec; }}
+
 // sweep array out of matrix in-place
-int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, int margin, int fun)
+int pcapack_sweep(const int m, const int n, double *restrict x, double *restrict vec, const int lvec, const int margin, const int fun)
 {
   int i, j;
   int pos;
@@ -28,35 +58,19 @@ int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, in
   {
     if (fun == PLUS)
     {
-      for (j=0; j<n; j++)
-      {
-        for (i=0; i<m; i++)
-          x[i + m*j] += vec[i];
-      }
+      SWEEP_ROWS_SPECIAL(+=);
     }
     else if (fun == MINUS)
     {
-      for (j=0; j<n; j++)
-      {
-        for (i=0; i<m; i++)
-          x[i + m*j] -= vec[i];
-      }
+      SWEEP_ROWS_SPECIAL(-=);
     }
     else if (fun == TIMES)
     {
-      for (j=0; j<n; j++)
-      {
-        for (i=0; i<m; i++)
-          x[i + m*j] *= vec[i];
-      }
+      SWEEP_ROWS_SPECIAL(*=);
     }
     else if (fun == DIVIDE)
     {
-      for (j=0; j<n; j++)
-      {
-        for (i=0; i<m; i++)
-          x[i + m*j] /= vec[i];
-      }
+      SWEEP_ROWS_SPECIAL(/=);
     }
   }
   
@@ -64,39 +78,19 @@ int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, in
   {
     if (fun == PLUS)
     {
-      for (j=0; j<n; j++)
-      {
-        tmp = vec[j];
-        for (i=0; i<m; i++)
-          x[i + m*j] += tmp;
-      }
+      SWEEP_COLS_SPECIAL(+=);
     }
     else if (fun == MINUS)
     {
-      for (j=0; j<n; j++)
-      {
-        tmp = vec[j];
-        for (i=0; i<m; i++)
-          x[i + m*j] -= tmp;
-      }
+      SWEEP_COLS_SPECIAL(-=);
     }
     else if (fun == TIMES)
     {
-      for (j=0; j<n; j++)
-      {
-        tmp = vec[j];
-        for (i=0; i<m; i++)
-          x[i + m*j] *= tmp;
-      }
+      SWEEP_COLS_SPECIAL(*=);
     }
     if (fun == DIVIDE)
     {
-      for (j=0; j<n; j++)
-      {
-        tmp = vec[j];
-        for (i=0; i<m; i++)
-          x[i + m*j] /= tmp;
-      }
+      SWEEP_COLS_SPECIAL(/=);
     }
   }
   
@@ -107,116 +101,45 @@ int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, in
     {
       if (margin == ROWS)
       {
-        pos = 1;
-        for (j=0; j<n; j++)
-        {
-          for (i=0; i<m; i++)
-          {
-            x[i + m*j] += vec[pos];
-            pos = (pos+1) % lvec;
-          }
-        }
+        SWEEP_ROWS(+=);
       }
       else if (margin == COLS)
       {
-        for (j=0; j<n; j++)
-        {
-          pos = j%lvec;
-          for (i=0; i<m; i++)
-          {
-            x[i + m*j] += vec[pos];
-            pos = (pos+n) % lvec;
-          }
-        }
+        SWEEP_COLS(+=);
       }
     }
     else if (fun == MINUS)
     {
-      
-    }
-    // TODO etc ...
-  }
-}
-
-
-
-// in-place
-int pcapack_scale(bool centerx, bool scalex, const int m, const int n, double *x)
-{
-  int i, j;
-  double colmean, colvar;
-  double dt, tmp;
-  
-  if (m == 0 || n == 0) return 0;
-  
-  // Doing both at once, if needed, is more performant
-  if (centerx && scalex)
-  {
-    #pragma omp parallel for private(i, j, colmean, colvar, dt) shared(x) if(m*n > OMP_MIN_SIZE)
-    for (j=0; j<n; j++)
-    {
-      colmean = 0;
-      colvar = 0;
-      
-      #pragma omp simd
-      for (i=0; i<m; i++)
+      if (margin == ROWS)
       {
-        dt = x[i + m*j] - colmean;
-        colmean += dt/((double) i+1);
-        colvar += dt * (x[i + m*j] - colmean);
+        SWEEP_ROWS(-=);
       }
-      
-      colvar = sqrt(colvar / ((double) m-1));
-      
-      // Remove mean and variance
-      for (i=0; i<m; i++)
-        x[i + m*j] = (x[i   + m*j]- colmean) / colvar;
-    }
-  }
-  else if (centerx)
-  {
-    const double div = 1. / ((double) m);
-    
-    #pragma omp parallel for private(i, j, colmean) shared(x) if(m*n > OMP_MIN_SIZE)
-    for (j=0; j<n; j++)
-    {
-      colmean = 0;
-      
-      // Get column mean
-      #pragma omp simd
-      for (i=0; i<m; i++)
-        colmean += x[i   + m*j] * div;
-      
-      // Remove mean from column
-      #pragma omp simd
-      for (i=0; i<m; i++)
-        x[i   + m*j] -= colmean;
-      
-    }
-  }
-  else if (scalex) // RMSE
-  {
-    const double div = 1./((double) m-1);
-    
-    #pragma omp parallel for private(i, j, colvar, tmp) shared(x) if (m*n > OMP_MIN_SIZE)
-    for (j=0; j<n; j++)
-    {
-      colvar = 0;
-      
-      // Get column variance
-      #pragma omp simd
-      for (i=0; i<m; i++)
+      else if (margin == COLS)
       {
-        tmp = x[i + m*j];
-        colvar += tmp*tmp*div;
+        SWEEP_COLS(-=);
       }
-      
-      colvar = sqrt(colvar);
-      
-      // Remove variance from column
-      #pragma omp simd
-      for (i=0; i<m; i++)
-        x[i + m*j] /= colvar;
+    }
+    else if (fun == TIMES)
+    {
+      if (margin == ROWS)
+      {
+        SWEEP_ROWS(*=);
+      }
+      else if (margin == COLS)
+      {
+        SWEEP_COLS(*=);
+      }
+    }
+    else if (fun == DIVIDE)
+    {
+      if (margin == ROWS)
+      {
+        SWEEP_ROWS(/=);
+      }
+      else if (margin == COLS)
+      {
+        SWEEP_COLS(/=);
+      }
     }
   }
   

@@ -39,6 +39,7 @@ set(SUMSTATS
 	src/sumstats/covariance.c
 	src/sumstats/crossprod.c
 	src/sumstats/means.c
+	src/sumstats/scale.c
 	src/sumstats/sweeps.c
 	src/sumstats/variances.c
 )
