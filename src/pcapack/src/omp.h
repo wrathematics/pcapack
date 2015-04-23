@@ -8,17 +8,21 @@
 #ifdef _OPENMP
 #include <omp.h>
 #if _OPENMP >= 201307
-#define _OPENMP_VER_4
+#define OMP_VER_4
 #elif _OPENMP >= 200805
-#define _OPENMP_VER_3
+#define OMP_VER_3
 #endif
 #endif
 
 
 // Insert SIMD pragma if supported
-#define SAFE_SIMD \
-  #if _OPENMP_VER_4 \
-    #pragma omp for simd \
-  #endif
+#ifdef OMP_VER_4
+#define SAFE_SIMD _Pragma("omp simd")
+#define SAFE_FOR_SIMD _Pragma("omp for simd")
+#else
+#define SAFE_SIMD 
+#define SAFE_FOR_SIMD
+#endif
+
 
 #endif
