@@ -19,6 +19,8 @@ int pcapack_scale(const bool centerx, const bool scalex, const int m, const int 
   
   if (m == 0 || n == 0) return 0;
   
+  ALIGNMENT(x, 16);
+  
   // Doing both at once, if needed, is more performant
   if (centerx && scalex)
   {

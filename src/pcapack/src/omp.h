@@ -25,4 +25,15 @@
 #endif
 
 
+// Inform compiler of byte alignment if GCC >= 4.7
+#ifdef __GNUC__
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 7
+#define ALIGNMENT(x,bytes) x=__builtin_assume_aligned(x,bytes)
+#else
+#define ALIGNMENT(x,bytes)
+#endif
+#endif
+
+
+
 #endif
