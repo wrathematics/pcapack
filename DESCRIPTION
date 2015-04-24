@@ -4,7 +4,7 @@ Version: 0.1.0
 Depends: R (>= 2.14.0)
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
         "wrathematics@gmail.com"), person("Christian", "Heckendorf", 
-        role=c("ctb")), person("George", "Ostrouchov", role = "ctb"))
+        role=c("ctb")))
 Description: This package offers several ways of quickly computing principal
         components, including several methods for computing the first few
         principal components (equivalently, left/right singular vectors).
