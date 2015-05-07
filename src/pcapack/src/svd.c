@@ -35,7 +35,7 @@
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
  */
-int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *restrict x, double *restrict s, double *restrict u, double *restrict vt)
+int pcapack_svd(const bool inplace, const int nu, const int nv, const int m, const int n, double *restrict x, double *restrict s, double *restrict u, double *restrict vt)
 {
   char jobz;
   int i;
@@ -109,7 +109,7 @@ int pcapack_svd(bool inplace, const int nu, const int nv, int m, int n, double *
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
  */
-int pcapack_eig(bool inplace, bool only_values, bool symmetric, int n, double *restrict x, double *restrict values, double *restrict vectors)
+int pcapack_eig(const bool inplace, const bool only_values, const bool symmetric, const int n, double *restrict x, double *restrict values, double *restrict vectors)
 {
   int info = 0;
   double *x_cp;

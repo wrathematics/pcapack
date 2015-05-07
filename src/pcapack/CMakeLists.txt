@@ -54,8 +54,9 @@ set(UTILS
 
 SET(PCA
 	src/fastmap.c
-	src/svd.c
 	src/pca.c
+	src/randsvd.c
+	src/svd.c
 )
 
 SET(DEBUG

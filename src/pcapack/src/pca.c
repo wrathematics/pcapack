@@ -43,7 +43,7 @@
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int pcapack_prcomp_svd(bool centerx, bool scalex, bool retx, int m, int n, double *restrict x, double *restrict sdev, double *restrict rotation)
+int pcapack_prcomp_svd(const bool centerx, const bool scalex, const bool retx, const int m, const int n, double *restrict x, double *restrict sdev, double *restrict rotation)
 {
   char trans = 'n';
   int info;
@@ -132,7 +132,7 @@ static inline void sqrt_rev(int n, double *sdev)
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int pcapack_prcomp_eigcov(bool retx, int m, int n, double *x, double *sdev, double *rotation)
+int pcapack_prcomp_eigcov(const bool retx, const int m, const int n, double *restrict x, double *restrict sdev, double *restrict rotation)
 {
   int info = 0;
   int i;
