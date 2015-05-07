@@ -14,40 +14,40 @@ particularly stable.
 Covariance:
 ```
      test replications elapsed relative
-2 pcapack           10   0.186    1.000
-1       R           10   3.456   18.581
+2 pcapack           10   0.182    1.000
+1       R           10   3.444   18.923
 ```
 
 PCA:
 ```
      test replications elapsed relative
-1 pcapack           10   2.538    1.000
-2       R           10   3.542    1.396
+1 pcapack           10   2.267    1.000
+2       R           10   3.350    1.478
 ```
 
 SVD:
 ```
      test replications elapsed relative
-1 pcapack           10   1.550    1.000
-2       R           10   1.896    1.223
+1 pcapack           10   1.422    1.000
+2       R           10   1.725    1.213
 ```
 
 Centering and Scaling:
 ```
 ### center=TRUE, scale=FALSE
      test replications elapsed relative
-2 pcapack           10   0.244    1.000
-1       R           10   2.356    9.656
+2 pcapack           10   0.236    1.000
+1       R           10   2.381   10.089
 
 ### center=FALSE, scale=TRUE
      test replications elapsed relative
-2 pcapack           10   0.244    1.000
-1       R           10   2.356    9.656
+2 pcapack           10   0.277    1.000
+1       R           10   5.207   18.798
 
 ### center=TRUE, scale=TRUE
      test replications elapsed relative
-2 pcapack           10   0.497    1.000
-1       R           10   7.786   15.666
+2 pcapack           10   0.476    1.000
+1       R           10   7.719   16.216
 ```
 
 You can find the source for these benchmarks in the `inst/benchmarks/` tree.
