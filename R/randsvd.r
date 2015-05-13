@@ -77,16 +77,16 @@ rand.svd_R <- function(A, k, q, compute.u, compute.vt)
 
 
 # Unified method
-rand.svd <- function(x, k=1, q=3, compute.u=TRUE, compute.vt=TRUE)
+rsvd <- function(x, k=1, q=3, ret.u=TRUE, ret.vt=TRUE)
 {
   ### Cheap checks first
-  assert.type(compute.u, "logical")
-  assert.type(compute.vt, "logical")
+  assert.type(ret.u, "logical")
+  assert.type(ret.vt, "logical")
   
   assert.natnum(k)
   k <- as.integer(k)
-  if (k > nrow(A))
-    stop("'k' must be no greater than nrow(A)")
+  if (k > nrow(x))
+    stop("'k' must be no greater than nrow(x)")
   
   assert.natnum(q)
   q <- as.integer(q)
@@ -97,13 +97,10 @@ rand.svd <- function(x, k=1, q=3, compute.u=TRUE, compute.vt=TRUE)
 #    stop("missing values not allowed")
 #  if (any(!is.finite(A))) 
 #    stop("infinite values not allowed")
-  if (!is.matrix(A))
-    dim(A) <- c(length(A), 1L)
+  if (!is.matrix(x))
+    dim(A) <- c(length(x), 1L)
   
-  
-  ### TODO .Call, etc.
-  warning("not done, don't use this")
-  invisible()
+  .Call("R_pcapack_randsvd", )
 }
 
 
