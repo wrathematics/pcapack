@@ -40,7 +40,7 @@ int pcapack_cov(const int method, int m, int n, double *restrict x, double *rest
   
   pcapack_scale(true, false, m, n, x);
   
-  info = pcapack_crossprod(m, n, x, alpha, cov);
+  info = pcapack_crossprod(true, m, n, x, alpha, cov);
   
   return info;
 }

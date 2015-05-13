@@ -93,6 +93,9 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
  * @details
  * Computes t(x) * x using a rank-k symmetric update.  Uses dsyrk.
  * 
+ * @param symmetrize
+ * Input.  Should the matrix be symmetrized? If not, only the upper triangle
+ * contains useful information.
  * @param m,n
  * Inputs.  Problem size (dims of x)
  * @param x
@@ -106,12 +109,15 @@ int pcapack_symmetrize(const int triang, const int m, const int n, double *x)
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int pcapack_crossprod(int m, int n, const double *restrict x, double alpha, double *restrict c)
+int pcapack_crossprod(const bool symmetrize, const int m, const int n, const double *restrict x, const double alpha, double *restrict c)
 {
   int info = 0;
   
   dsyrk_(&(char){'u'}, &(char){'t'}, &n, &m, &alpha, x, &m, &(double){0.0}, c, &n);
-  info = pcapack_symmetrize(UPPER, n, n, c);
+  if (info) return info;
+  
+  if (symmetrize)
+    info = pcapack_symmetrize(UPPER, n, n, c);
   
   return info;
 }
@@ -138,12 +144,15 @@ int pcapack_crossprod(int m, int n, const double *restrict x, double alpha, doub
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int pcapack_tcrossprod(int m, int n, const double *x, double alpha, double *c)
+int pcapack_tcrossprod(const bool symmetrize, const int m, const int n, const double *x, const double alpha, double *c)
 {
   int info = 0;
   
   dsyrk_(&(char){'u'}, &(char){'n'}, &m, &n, &alpha, x, &m, &(double){0.0}, c, &m);
-  info = pcapack_symmetrize(UPPER, m, m, c);
+  if (info) return info;
+  
+  if (symmetrize)
+    info = pcapack_symmetrize(UPPER, m, m, c);
   
   return info;
 }
