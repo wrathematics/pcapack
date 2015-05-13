@@ -48,6 +48,7 @@ set(UTILS
 	src/utils/distances.c
 	src/utils/dnrm2.c
 	src/utils/inverse.c
+	src/utils/matmult.c
 	src/utils/rank.c
 	src/utils/xpose.c
 )
