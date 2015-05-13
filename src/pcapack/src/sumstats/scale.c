@@ -24,6 +24,8 @@ int pcapack_scale(const bool centerx, const bool scalex, const int m, const int 
   // Doing both at once, if needed, is more performant
   if (centerx && scalex)
   {
+    tmp = 1. / ((double) m-1);
+    
     #pragma omp parallel for private(i, j, colmean, colvar, dt) shared(x) if(m*n > OMP_MIN_SIZE)
     for (j=0; j<n; j++)
     {
@@ -38,11 +40,12 @@ int pcapack_scale(const bool centerx, const bool scalex, const int m, const int 
         colvar += dt * (x[i + m*j] - colmean);
       }
       
-      colvar = sqrt(colvar / ((double) m-1));
+      colvar = sqrt(colvar * tmp);
       
       // Remove mean and variance
+      #pragma omp simd
       for (i=0; i<m; i++)
-        x[i + m*j] = (x[i   + m*j]- colmean) / colvar;
+        x[i + m*j] = (x[i + m*j] - colmean) / colvar;
     }
   }
   else if (centerx)

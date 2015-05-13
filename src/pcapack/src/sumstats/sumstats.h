@@ -9,8 +9,8 @@
 #define COR_SPEARMAN  2
 #define COR_KENDALL   3
 
-int pcapack_cov(const int method, int m, int n, double *x, double *cov);
-int pcapack_cor(const int method, int m, int n, double *x, double *cor);
+int pcapack_cov(const int method, int m, int n, double *restrict x, double *restrict cov);
+int pcapack_cor(const int method, int m, int n, double *restrict x, double *restrict cor);
 
 
 
@@ -20,17 +20,17 @@ int pcapack_cor(const int method, int m, int n, double *x, double *cor);
 
 bool pcapack_is_symmetric(const int m, const int n, const double *x);
 int pcapack_symmetrize(const int triang, const int m, const int n, double *x);
-int pcapack_crossprod(int m, int n, const double *x, double alpha, double *c);
-int pcapack_tcrossprod(int m, int n, const double *x, double alpha, double *c);
+int pcapack_crossprod(const bool symmetrize, const int m, const int n, const double *restrict x, const double alpha, double *restrict c);
+int pcapack_tcrossprod(const bool symmetrize, const int m, const int n, const double *restrict x, const double alpha, double *restrict c);
 
 
 
 // means.c
-int pcapack_rowsums(const int m, const int n, double *x, double *rowsums);
-int pcapack_colsums(const int m, const int n, double *x, double *colsums);
+int pcapack_rowsums(const int m, const int n, double *restrict x, double *restrict rowsums);
+int pcapack_colsums(const int m, const int n, double *restrict x, double *restrict colsums);
 double pcapack_mean(const int n, double *x);
-int pcapack_rowmeans(const int m, const int n, double *x, double *rowsums);
-int pcapack_colmeans(const int m, const int n, double *x, double *colsums);
+int pcapack_rowmeans(const int m, const int n, double *restrict x, double *restrict rowsums);
+int pcapack_colmeans(const int m, const int n, double *restrict x, double *restrict colsums);
 
 
 
@@ -43,8 +43,8 @@ int pcapack_colmeans(const int m, const int n, double *x, double *colsums);
 #define ROWS 1
 #define COLS 2
 
-int pcapack_sweep(const int m, const int n, double *x, double *vec, int lvec, int margin, int fun);
-int pcapack_scale(const bool centerx, const bool scalex, const int m, const int n, double *x);
+int pcapack_sweep(const int m, const int n, double *restrict x, double *restrict vec, int lvec, int margin, int fun);
+int pcapack_scale(const bool centerx, const bool scalex, const int m, const int n, double *restrict x);
 
 
 
