@@ -150,8 +150,13 @@ int pcapack_prcomp_eigcov(const bool retx, const int m, const int n, double *res
   else
     x_cp = x;
   
-  info = pcapack_cov(COR_PEARSON, m, n, x, rotation);
+  // cov without symmetrizing
+  tmp = 1. / ((double) m-1);
+  pcapack_scale(true, false, m, n, x);
+  info = pcapack_crossprod(false, m, n, x, tmp, rotation);
+/*  info = pcapack_cov(COR_PEARSON, m, n, x, rotation);*/
   if (info != 0) goto cleanup;
+  
   
   tmp = 1. - 1./((double) m);
   dscal_(&(int){n*n}, &tmp, rotation, &(int){1});

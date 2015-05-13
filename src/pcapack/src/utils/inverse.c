@@ -24,7 +24,7 @@
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int pcapack_inverse(int n, double *restrict x)
+int pcapack_inverse(const int n, double *restrict x)
 {
   int info = 0;
   int *ipiv;

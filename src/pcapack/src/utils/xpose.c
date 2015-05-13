@@ -32,7 +32,7 @@ static void xpose_inplace_nonsquare(const int m, const int n, double *x)
 
 
 
-static void xpose_inplace_square(int n, double *x)
+static void xpose_inplace_square(const int n, double *x)
 {
   int i, j;
   double tmp;
@@ -52,7 +52,7 @@ static void xpose_inplace_square(int n, double *x)
 
 
 
-void pcapack_xpose(int m, int n, double *x)
+void pcapack_xpose(const int m, const int n, double *x)
 {
   if (m == n)
     xpose_inplace_square(n, x);

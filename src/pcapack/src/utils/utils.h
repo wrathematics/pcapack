@@ -14,7 +14,7 @@ double dnrm2(int n, double *x, int incx);
 
 
 // inverse.c
-int pcapack_inverse(int n, double *x);
+int pcapack_inverse(const int n, double *x);
 
 
 // Rspecial.c
@@ -22,7 +22,7 @@ bool pcapack_anyna(const int n, const double *x);
 
 
 // xpose.c
-void pcapack_xpose(int m, int n, double *x);
+void pcapack_xpose(const int m, const int n, double *x);
 
 
 #endif

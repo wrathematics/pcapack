@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "matrix.h"
 #include "rand/rand.h"
 #include "sumstats/sumstats.h"
 #include "utils/utils.h"
@@ -22,13 +23,17 @@ int pcapack_cma(int n, int p, double *x, int k);
 
 
 // pca.c
-int pcapack_prcomp_svd(const bool centerx, const bool scalex, const bool retx, const int m, const int n, double *x, double *sdev, double *rotation);
-int pcapack_prcomp_eigcov(const bool retx, const int m, const int n, double *x, double *sdev, double *rotation);
+int pcapack_prcomp_svd(const bool centerx, const bool scalex, const bool retx, const int m, const int n, double *restrict x, double *restrict sdev, double *restrict rotation);
+int pcapack_prcomp_eigcov(const bool retx, const int m, const int n, double *restrict x, double *restrict sdev, double *restrict rotation);
+
+
+// randsvd.c
+int pcapack_randsvd(const bool retu, const bool retvt, const int k, const int niter, const int method, const int m, const int n, double *restrict x, double *restrict s, double *restrict u, double *restrict vt);
 
 
 // svd.c
-int pcapack_svd(const bool inplace, const int nu, const int nv, const int m, const int n, double *x, double *s, double *u, double *vt);
-int pcapack_eig(const bool inplace, const bool only_values, const bool symmetric, const int n, double *x, double * values, double *vectors);
+int pcapack_svd(const bool inplace, const int nu, const int nv, const int m, const int n, double *restrict x, double *restrict s, double *restrict u, double *restrict vt);
+int pcapack_eig(const bool inplace, const bool only_values, const bool symmetric, const int n, double *restrict x, double *restrict values, double *restrict vectors);
 
 
 #endif
