@@ -1,6 +1,6 @@
 #include "pcapack.h"
 
-SEXP R_scale(SEXP centerx, SEXP scalex, SEXP x)
+SEXP R_pca_predict(SEXP centerx, SEXP scalex, SEXP x)
 {
   R_INIT;
   const int m = nrows(x), n = ncols(x);
@@ -11,8 +11,13 @@ SEXP R_scale(SEXP centerx, SEXP scalex, SEXP x)
   memcpy(REAL(scaled), REAL(x), m*n*sizeof(double));
   
   info = pcapack_scale(INT(centerx), INT(scalex), m, n, REAL(scaled));
-  chkinfo(info);
   
   R_END;
   return scaled;
 }
+
+
+
+
+scale(newdata, object$center, object$scale) %*% object$rotation
+

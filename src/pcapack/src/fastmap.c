@@ -6,8 +6,6 @@
 
 
 #include "pcapack.h"
-#include "lapack.h"
-#include "sumstats/sumstats.h"
 
 
 static inline double sign(double x)
@@ -118,7 +116,7 @@ int pcapack_cma(const int n, const int p, double *restrict x, const int k)
 static inline void bestdist(int n, int ncol, double *restrict x, double *restrict a, double *restrict b, double *restrict work)
 {
   int i, j;
-  int ia;
+  int ia = 0;
   int intone = 1;
   double tmp, best;
   double one = 1.;

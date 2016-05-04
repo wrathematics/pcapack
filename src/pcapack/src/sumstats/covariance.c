@@ -6,8 +6,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 #include "sumstats.h"
 #include "../utils/rank.h"
+#include "../matlib/matlib.h"
 
 
 // centering is done in-place
@@ -47,34 +49,39 @@ int pcapack_cov(const int method, int m, int n, double *restrict x, double *rest
 
 
 
-int pcapack_cor(const int method, int m, int n, double *x, double *cor)
+static inline double covar(const int n, const double *x, const double *y)
 {
-  int info;
+  const double recip_n = (double) 1. / (n-1);
+  double sum_xy = 0., sum_x = 0., sum_y = 0.;
+  double tx, ty;
+  
+  #pragma omp simd reduction(+: sum_xy, sum_x, sum_y)
+  for (int i=0; i<n; i++)
+  {
+    tx = x[i];
+    ty = y[i];
+    
+    sum_xy += tx*ty;
+    sum_x += tx;
+    sum_y += ty;
+  }
+  
+  return (sum_xy - (sum_x*sum_y*((double) 1./n))) * recip_n;
+}
+
+int pcapack_cov_naive(const int m, const int n, const double *restrict x, double *restrict cov)
+{
   int i, j;
-  double *ranks;
   
+  #pragma omp parallel for
+  for (j=0; j<n; j++)
+  {
+    for (i=j; i<n; i++)
+      cov[i + n*j] = covar(m, x+m*j, x+m*i);
+  }
   
-  if (m == 0 || n == 0) return 0;
-  if (method != COR_PEARSON && method != COR_SPEARMAN && method != COR_KENDALL) return -1;
+  int info = pcapack_symmetrize(LOWER, n, n, cov);
   
-  if (method == COR_PEARSON)
-  {
-    // variance(m, n, x, ret);
-    // scale(false, true, n, n, ret);
-  }
-  else if (method == COR_SPEARMAN)
-  {
-    ranks = malloc(m*n * sizeof(*ranks));
-    memcpy(ranks, x, m*n*sizeof(*ranks));
-    
-    colrank(RANK_MIN, m, n, ranks);
-    pcapack_cov(method, m, n, ranks, cor);
-    
-    free(ranks);
-  }
-  else if (method == COR_KENDALL)
-  {
-    // TODO
-  }
+  return info;
 }
 

@@ -1,6 +1,7 @@
 #ifndef __PCAPACK_SUMSTATS_H__
 #define __PCAPACK_SUMSTATS_H__
 
+
 #include <stdbool.h>
 
 
@@ -10,18 +11,11 @@
 #define COR_KENDALL   3
 
 int pcapack_cov(const int method, int m, int n, double *restrict x, double *restrict cov);
+int pcapack_cov_naive(const int m, const int n, const double *restrict x, double *restrict cov);
+
+
+// cor.c
 int pcapack_cor(const int method, int m, int n, double *restrict x, double *restrict cor);
-
-
-
-// crossprod.c
-#define UPPER 1
-#define LOWER 2
-
-bool pcapack_is_symmetric(const int m, const int n, const double *x);
-int pcapack_symmetrize(const int triang, const int m, const int n, double *x);
-int pcapack_crossprod(const bool symmetrize, const int m, const int n, const double *restrict x, const double alpha, double *restrict c);
-int pcapack_tcrossprod(const bool symmetrize, const int m, const int n, const double *restrict x, const double alpha, double *restrict c);
 
 
 

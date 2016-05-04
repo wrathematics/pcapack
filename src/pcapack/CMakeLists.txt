@@ -24,6 +24,19 @@ endif()
 
 
 ### Source files
+set(MATLIB
+	src/matlib/crossprod.c
+	src/matlib/distances.c
+	src/matlib/dnrm2.c
+	src/matlib/eig.c
+	src/matlib/inverse.c
+	src/matlib/matmult.c
+	src/matlib/qr.c
+	src/matlib/svd.c
+	src/matlib/symmetrize.c
+	src/matlib/xpose.c
+)
+
 set(RAND
 	src/rand/rand_normal.c
 	src/rand/rand_tab.c
@@ -36,8 +49,8 @@ set(RAND
 )
 
 set(SUMSTATS
+	src/sumstats/correlation.c
 	src/sumstats/covariance.c
-	src/sumstats/crossprod.c
 	src/sumstats/means.c
 	src/sumstats/scale.c
 	src/sumstats/sweeps.c
@@ -45,19 +58,13 @@ set(SUMSTATS
 )
 
 set(UTILS
-	src/utils/distances.c
-	src/utils/dnrm2.c
-	src/utils/inverse.c
-	src/utils/matmult.c
 	src/utils/rank.c
-	src/utils/xpose.c
 )
 
 SET(PCA
 	src/fastmap.c
 	src/pca.c
-	src/randsvd.c
-	src/svd.c
+#	src/randsvd.c
 )
 
 SET(DEBUG
@@ -65,7 +72,7 @@ SET(DEBUG
 )
 
 
-set(PCAPACK_FILES ${RAND} ${SUMSTATS} ${UTILS} ${PCA} ${DEBUG})
+set(PCAPACK_FILES ${RAND} ${MATLIB} ${SUMSTATS} ${UTILS} ${PCA} ${DEBUG})
 
 
 

@@ -26,7 +26,7 @@ pca <- function(x, retx=TRUE, center=TRUE, scale=FALSE, method="svd")
   assert.type(scale, "logical")
   
   assert.type(x, "numeric")
-
+  
   if (!is.double(x))
     storage.mode(x) <- "double"
   
@@ -35,8 +35,21 @@ pca <- function(x, retx=TRUE, center=TRUE, scale=FALSE, method="svd")
   else if (method == "eigcov")
     ret <- .Call(R_pcapack_prcomp_eigcov, x, as.integer(retx))
   
-  class(ret) <- "prcomp"
+  class(ret) <- c("pca", paste0("pca_", method))
   
   return(ret)
+}
+
+
+#' @method print pca
+#' @export
+print.pca <- function(x, ...)
+{
+  if (any(class(x) == "pca_svd"))
+    class(x) <- "prcomp"
+  else if (any(class(x) == "pca_eigcov"))
+    class(x) <- "princomp"
+  
+  print(x, ...)
 }
 

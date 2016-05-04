@@ -9,7 +9,6 @@
 #include <math.h>
 
 #include "pcapack.h"
-#include "lapack.h"
 #include "misc.h"
 
 

@@ -15,6 +15,8 @@
 #define MIN(m,n) m<n?m:n
 #define MAX(m,n) m<n?n:m
 
+#define chkinfo(info) if(info!=0)error("returned non-zero info\n")
+
 
 // scale.c
 SEXP R_scale(SEXP centerx, SEXP scalex, SEXP x);

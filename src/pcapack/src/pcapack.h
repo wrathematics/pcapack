@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "matrix.h"
+#include "matlib/matlib.h"
 #include "rand/rand.h"
 #include "sumstats/sumstats.h"
 #include "utils/utils.h"
@@ -29,11 +29,6 @@ int pcapack_prcomp_eigcov(const bool retx, const int m, const int n, double *res
 
 // randsvd.c
 int pcapack_randsvd(const bool retu, const bool retvt, const int k, const int niter, const int method, const int m, const int n, double *restrict x, double *restrict s, double *restrict u, double *restrict vt);
-
-
-// svd.c
-int pcapack_svd(const bool inplace, const int nu, const int nv, const int m, const int n, double *restrict x, double *restrict s, double *restrict u, double *restrict vt);
-int pcapack_eig(const bool inplace, const bool only_values, const bool symmetric, const int n, double *restrict x, double *restrict values, double *restrict vectors);
 
 
 #endif

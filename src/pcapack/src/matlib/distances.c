@@ -6,16 +6,10 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include "../lapack.h"
 
-#define DIST_EUCLIDEAN  1
-#define DIST_SUPREMUM   2
-#define DIST_INFIMUM    3
-#define DIST_MANHATTAN  4
-#define DIST_CANBERRA   5
-#define DIST_RCANBERRA  6
-#define DIST_MINKOWSKI  7
-#define DIST_BINARY     8
+#include "matlib.h"
+#include "lapack.h"
+#include "../omp.h"
 
 
 static inline int idamax(const int n, const double *restrict x)
@@ -106,8 +100,10 @@ double pcapack_distance(const int method, const int n, const double *restrict x,
   int i1 = 1;
   double neg1 = -1.;
   
+  work = malloc(n * sizeof(*work));
   
-  #pragma omp parallel for simd default(shared)
+  
+  SAFE_PARALLEL_FOR_SIMD
   for (i=0; i<n; i++)
     work[i] = x[i] - y[i];
   
@@ -182,7 +178,7 @@ double pcapack_mahalanobis(int n, const double *restrict x, const double *restri
   work1 = malloc(n * sizeof(*work1));
   work2 = malloc(n * sizeof(*work2));
   
-  #pragma omp parallel for simd default(shared)
+  SAFE_PARALLEL_FOR_SIMD
   for (i=0; i<n; i++)
     work1[i] = x[i] - y[i];
   
@@ -194,6 +190,9 @@ double pcapack_mahalanobis(int n, const double *restrict x, const double *restri
     mahal += work1[i]*work2[i];
   
   mahal = sqrt(mahal);
+  
+  free(work1);
+  free(work2);
   return mahal;
 }
 

@@ -1,8 +1,10 @@
-#ifndef __PCAPACK_MATRIX_H__
-#define __PCAPACK_MATRIX_H__
-
+#ifndef __MATLIB_MATRIX_H__
+#define __MATLIB_MATRIX_H__
 
 #include <stdlib.h>
+#include "lapack.h"
+
+ // FIXME size_t???
 
 typedef struct dblvec_t
 {

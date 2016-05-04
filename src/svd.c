@@ -51,9 +51,8 @@ SEXP R_pcapack_svd(SEXP NU, SEXP NV, SEXP X)
   
   
   info = pcapack_svd(false, INT(NU), INT(NV), m, n, DBLP(X), DBLP(S), u, vt);
+  chkinfo(info);
   
-/*  if (info != 0)*/
-/*    error(_("info=%d from Lapack routine '%s'"), info, "dgesdd");*/
   
   if (retu && retvt)
   {
@@ -78,6 +77,6 @@ SEXP R_pcapack_svd(SEXP NU, SEXP NV, SEXP X)
   
   R_END;
   return RET;
-} 
+}
 
 

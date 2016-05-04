@@ -1,7 +1,7 @@
-// Translation of dnrm2
+// Translation of dnrm2 to C
 
 #include <math.h>
-#include "../lapack.h"
+#include "lapack.h"
 
 double dnrm2(int n, double *restrict x, int incx)
 {

@@ -12,7 +12,7 @@ SEXP make_pca_default_colnames(const int n)
   SEXP ret;
   
   buflen = (int) (ceil(log10((double)n)) + PREBUFLEN);
-  char *buf = malloc(buflen * sizeof(buf));
+  char *buf = malloc(buflen * sizeof(*buf));
   buf[0] = 'P';
   buf[1] = 'C';
   

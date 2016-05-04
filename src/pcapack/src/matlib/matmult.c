@@ -4,12 +4,10 @@
 
 // Copyright 2015, Schmidt
 
-#include <stdlib.h>
-#include <string.h>
+#include <stdbool.h>
 #include <math.h>
 
-#include "../pcapack.h"
-#include "../lapack.h"
+#include "matrix.h"
 
 
 /**
@@ -34,7 +32,7 @@
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-inline void matmult(const bool transx, const bool transy, matrix_t *x, matrix_t *y, matrix_t *ret)
+void matmult(const bool transx, const bool transy, matrix_t *x, matrix_t *y, matrix_t *ret)
 {
   // m = # rows of op(x)
   // n = # cols of op(y)

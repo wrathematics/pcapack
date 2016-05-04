@@ -21,7 +21,7 @@
   _Pragma("omp parallel for default(shared) private(i,j,tmp) if(m*n > OMP_MIN_SIZE)") \
   for (j=0; j<n; j++){ \
     tmp = vec[j]; \
-    _Pragma("omp simd") \
+    SAFE_SIMD \
     for (i=0; i<m; i++){ \
       x[i + m*j] ASSIGNMENT tmp; }}
 
@@ -36,7 +36,7 @@
   _Pragma("omp parallel for default(shared) private(i,j,tmp) if(m*n > OMP_MIN_SIZE)") \
   for (j=0; j<n; j++){ \
     pos = j%lvec; \
-    _Pragma("omp simd") \
+    SAFE_SIMD \
     for (i=0; i<m; i++){ \
       x[i + m*j] += vec[pos]; \
       pos = (pos+n) % lvec; }}

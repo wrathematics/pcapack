@@ -5,7 +5,7 @@
 // Copyright 2015, Schmidt
 
 #include <stdlib.h>
-#include "../lapack.h"
+#include "lapack.h"
 
 
 /**

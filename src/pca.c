@@ -33,10 +33,8 @@ SEXP R_pcapack_prcomp_svd(SEXP X, SEXP CENTER, SEXP SCALE, SEXP RETX)
   else
     x = DBLP(X);
   
-  pcapack_prcomp_svd(centerx, scalex, retx, m, n, x, DBLP(SDEV), DBLP(TROT));
-  
-/*  if (info != 0)*/
-/*    error(_("info=%d from Lapack routine '%s'"), info, "dgesdd");*/
+  info = pcapack_prcomp_svd(centerx, scalex, retx, m, n, x, DBLP(SDEV), DBLP(TROT));
+  chkinfo(info);
   
   pcnames = make_pca_default_colnames(n);
   setDimNames(dimnames, pcnames, TROT);
@@ -89,11 +87,12 @@ SEXP R_pcapack_prcomp_eigcov(SEXP X, SEXP RETX)
     x = DBLP(X);
   
   info = pcapack_prcomp_eigcov(&retx, m, n, x, DBLP(SDEV), DBLP(TROT));
+  chkinfo(info);
   
   pcnames = make_pca_default_colnames(n);
   setDimNames(dimnames, pcnames, TROT);
   
-
+  
   if (retx)
   {
     xnames = make_pca_default_colnames(n);
